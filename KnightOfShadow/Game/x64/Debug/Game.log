@@ -1,0 +1,19 @@
+﻿  main.cpp
+C:\GAME\KnightOfShadow\main.cpp(21,22): warning C4566: character represented by universal-character-name '\u1EC3' cannot be represented in the current code page (1252)
+C:\GAME\KnightOfShadow\main.cpp(21,22): warning C4566: character represented by universal-character-name '\u1EDF' cannot be represented in the current code page (1252)
+C:\GAME\KnightOfShadow\main.cpp(21,22): warning C4566: character represented by universal-character-name '\u1EA1' cannot be represented in the current code page (1252)
+C:\GAME\KnightOfShadow\main.cpp(29,5): error C2065: 'Player': undeclared identifier
+C:\GAME\KnightOfShadow\main.cpp(29,12): error C2146: syntax error: missing ';' before identifier 'player'
+C:\GAME\KnightOfShadow\main.cpp(29,12): error C2065: 'player': undeclared identifier
+C:\GAME\KnightOfShadow\main.cpp(30,5): error C2065: 'Enemy': undeclared identifier
+C:\GAME\KnightOfShadow\main.cpp(30,11): error C2146: syntax error: missing ';' before identifier 'enemy'
+C:\GAME\KnightOfShadow\main.cpp(30,11): error C2065: 'enemy': undeclared identifier
+C:\GAME\KnightOfShadow\main.cpp(31,5): error C2065: 'Map': undeclared identifier
+C:\GAME\KnightOfShadow\main.cpp(31,9): error C2146: syntax error: missing ';' before identifier 'map'
+C:\GAME\KnightOfShadow\main.cpp(31,9): error C2065: 'map': undeclared identifier
+C:\GAME\KnightOfShadow\main.cpp(43,13): error C2065: 'player': undeclared identifier
+C:\GAME\KnightOfShadow\main.cpp(47,9): error C2065: 'player': undeclared identifier
+C:\GAME\KnightOfShadow\main.cpp(48,9): error C2065: 'enemy': undeclared identifier
+C:\GAME\KnightOfShadow\main.cpp(52,9): error C2065: 'map': undeclared identifier
+C:\GAME\KnightOfShadow\main.cpp(53,9): error C2065: 'enemy': undeclared identifier
+C:\GAME\KnightOfShadow\main.cpp(54,9): error C2065: 'player': undeclared identifier
