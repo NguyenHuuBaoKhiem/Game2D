@@ -1,59 +1,45 @@
-﻿#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
-#include <iostream>
-
-#include "Player.h"
-#include "Enemy.h"
-#include "Map.h"
-
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 600;
-
+﻿#include<SFML/Graphics.hpp>
+#include"Player.h"
 int main()
 {
-    // Tạo cửa sổ
-    sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Knight Of Shadow");
-    window.setFramerateLimit(60);
+	sf::RenderWindow window(sf::VideoMode(1600, 800), "Game");
+	window.setFramerateLimit(60);
 
-    // Load âm thanh nền (nếu có)
-    sf::Music bgMusic;
-    if (!bgMusic.openFromFile("Assets/sounds/background.ogg")) {
-        std::cout << "Không thể mở file nhạc!\n";
-    }
-    else {
-        bgMusic.setLoop(true);
-        bgMusic.play();
-    }
+	sf::Texture texIdle, texWalk, texAttack1, texAttack2, texAttack3;
+	texWalk.loadFromFile("Assets/Images/Player/run.png");
+	texIdle.loadFromFile("Assets/Images/Player/idle.png");
+	texAttack1.loadFromFile("Assets/Images/Player/at1.png");
+	texAttack2.loadFromFile("Assets/Images/Player/at2.png");
+	texAttack3.loadFromFile("Assets/Images/Player/at3.png");
 
-    // Tạo đối tượng
-    Player player;
-    Enemy enemy;
-    Map map;
+	texIdle.setSmooth(true);
+	texWalk.setSmooth(true);
+	texAttack1.setSmooth(true);
+	texAttack2.setSmooth(true);
+	texAttack3.setSmooth(true);
 
-    // Vòng lặp game chính
-    while (window.isOpen())
-    {
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-                window.close();
+	Player player(texIdle, texWalk, texAttack1, texAttack2, texAttack3);
 
-            // Gửi sự kiện điều khiển cho Player
-            player.handleEvent(event);
-        }
+	sf::Clock clock;
 
-        // Cập nhật logic
-        player.update();
-        enemy.update();
+	while (window.isOpen())
+	{
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window.close();
+		}
+		float deltaTime = clock.restart().asSeconds();
 
-        // Vẽ
-        window.clear(sf::Color::Black);
-        map.draw(window);
-        enemy.draw(window);
-        player.draw(window);
-        window.display();
-    }
+		player.HandleInput(deltaTime);
+		player.Update(deltaTime);
 
-    return 0;
+		window.clear(sf::Color::White);
+		player.Draw(window);
+		window.display();
+	}
+
+	return 0;
+
 }
