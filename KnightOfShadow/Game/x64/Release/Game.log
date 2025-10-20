@@ -1,0 +1,4 @@
+﻿  Animation.cpp
+  main.cpp
+  Player.cpp
+LINK : fatal error LNK1104: cannot open file 'msvcprt.lib'
