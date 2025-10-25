@@ -7,6 +7,10 @@
       "RelativeMoniker": "D:0:0:{0620026F-053E-4671-BCB5-5FCCFEB43AAF}|Game.vcxproj|solutionrelative:Player.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{0620026F-053E-4671-BCB5-5FCCFEB43AAF}|Game.vcxproj|D:\\Github\\Game2D\\KnightOfShadow\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{0620026F-053E-4671-BCB5-5FCCFEB43AAF}|Game.vcxproj|solutionrelative:main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{0620026F-053E-4671-BCB5-5FCCFEB43AAF}|Game.vcxproj|D:\\Github\\Game2D\\KnightOfShadow\\Player.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{0620026F-053E-4671-BCB5-5FCCFEB43AAF}|Game.vcxproj|solutionrelative:Player.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
@@ -17,10 +21,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{0620026F-053E-4671-BCB5-5FCCFEB43AAF}|Game.vcxproj|D:\\Github\\Game2D\\KnightOfShadow\\Animation.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{0620026F-053E-4671-BCB5-5FCCFEB43AAF}|Game.vcxproj|solutionrelative:Animation.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{0620026F-053E-4671-BCB5-5FCCFEB43AAF}|Game.vcxproj|D:\\Github\\Game2D\\KnightOfShadow\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{0620026F-053E-4671-BCB5-5FCCFEB43AAF}|Game.vcxproj|solutionrelative:main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{0620026F-053E-4671-BCB5-5FCCFEB43AAF}|Game.vcxproj|D:\\Github\\Game2D\\KnightOfShadow\\Enemy.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
@@ -54,7 +54,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "Animation.cpp",
               "DocumentMoniker": "D:\\Github\\Game2D\\KnightOfShadow\\Animation.cpp",
               "RelativeDocumentMoniker": "Animation.cpp",
@@ -72,14 +72,14 @@
               "RelativeDocumentMoniker": "Player.cpp",
               "ToolTip": "D:\\Github\\Game2D\\KnightOfShadow\\Player.cpp",
               "RelativeToolTip": "Player.cpp",
-              "ViewState": "AgIAAA8AAAAAAAAAAAAAACQAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAANwAAAAAAAAAAAAAABUAAAAdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-10-19T09:55:10.856Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "Map.h",
               "DocumentMoniker": "D:\\Github\\Game2D\\KnightOfShadow\\Map.h",
               "RelativeDocumentMoniker": "Map.h",
@@ -103,27 +103,29 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Player.h",
               "DocumentMoniker": "D:\\Github\\Game2D\\KnightOfShadow\\Player.h",
               "RelativeDocumentMoniker": "Player.h",
               "ToolTip": "D:\\Github\\Game2D\\KnightOfShadow\\Player.h",
               "RelativeToolTip": "Player.h",
-              "ViewState": "AgIAACEAAAAAAAAAAAAAADQAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAB4AAAAAAAAAAAAAAFEAAAACAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-10-12T04:16:51.36Z"
+              "WhenOpened": "2025-10-12T04:16:51.36Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 1,
               "Title": "main.cpp",
               "DocumentMoniker": "D:\\Github\\Game2D\\KnightOfShadow\\main.cpp",
               "RelativeDocumentMoniker": "main.cpp",
               "ToolTip": "D:\\Github\\Game2D\\KnightOfShadow\\main.cpp",
               "RelativeToolTip": "main.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAIAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAA3AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-10-08T08:42:48.602Z"
+              "WhenOpened": "2025-10-08T08:42:48.602Z",
+              "EditorCaption": ""
             }
           ]
         }
