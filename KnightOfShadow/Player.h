@@ -1,6 +1,17 @@
 ﻿#pragma once
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "Animation.h"
+#include <vector>
+
+struct DashTrail {
+    sf::Sprite sprite;
+    float alpha = 0.f;
+};
+
+extern std::vector<DashTrail> dashTrails;
+extern float trailSpawnTimer;
+extern float trailSpawnInterval;
 
 enum PlayerState {
     Idle,
@@ -12,6 +23,17 @@ enum PlayerState {
 
 class Player {
 private:
+    sf::SoundBuffer dashBuffer;
+    sf::Sound dashSound;
+
+    sf::SoundBuffer jumpBuffer;
+    sf::Sound jumpSound;
+
+    sf::SoundBuffer at1_buffer;
+    sf::SoundBuffer at2_buffer;
+    sf::SoundBuffer at3_buffer;
+    sf::Sound attackSound;
+
     sf::Sprite sprite;
     sf::Vector2f velocity;
 
@@ -29,9 +51,17 @@ private:
     Animation attackAnim3;
 
     bool isOnGround = true;
-    float gravity = 600.f;      // lực hấp dẫn
-    float jumpStrength = -350.f; // lực nhảy (âm vì hướng lên trên)
-    float groundY = 500.f;
+    float gravity = 900.f;      // lực hấp dẫn
+    float jumpStrength = -450.f; // lực nhảy (âm vì hướng lên trên)
+    float groundY = 400.f; // y = vị trí mặt đất
+
+    // Dash variables
+    bool isDashing = false;
+    float dashTime = 0.f;
+    float dashDuration = 0.18f;   // thời gian dash (giây)
+    float dashSpeed = 500.f;      // tốc độ dash
+    float dashCooldown = 0.5f;    // thời gian hồi dash
+    float dashCooldownTimer = 0.f;
 
 public:
     // Constructor đồng bộ với Player.cpp
