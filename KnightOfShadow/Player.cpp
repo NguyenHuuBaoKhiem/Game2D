@@ -209,6 +209,23 @@ void Player::Update(float deltaTime)
 
     sprite.setTextureRect(currentRect);
 
+    if (state == Attacking1 || state == Attacking2 || state == Attacking3)
+    {
+        sf::FloatRect attackBox = sprite.getGlobalBounds();
+
+        // mở rộng vùng đánh ra 1 chút phía hướng đang facing
+        if (facingRight)
+            attackBox.left += attackBox.width * 0.3f;
+        else
+            attackBox.left -= attackBox.width * 0.3f;
+
+        // Gửi vùng này ra ngoài để kiểm tra
+        currentAttackBox = attackBox;
+    }
+    else
+    {
+        currentAttackBox = sf::FloatRect(); // reset
+    }
 }
 
 void Player::Draw(sf::RenderWindow& window)

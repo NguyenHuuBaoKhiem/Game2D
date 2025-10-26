@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #include<SFML/Graphics.hpp>
 
 class Animation :public sf::Sprite {
