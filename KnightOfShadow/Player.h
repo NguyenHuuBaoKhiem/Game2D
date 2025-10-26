@@ -63,6 +63,8 @@ private:
     float dashCooldown = 0.5f;    // thời gian hồi dash
     float dashCooldownTimer = 0.f;
 
+    sf::FloatRect currentAttackBox;
+
 public:
     // Constructor đồng bộ với Player.cpp
     Player(sf::Texture& texIdle, sf::Texture& texWalk,
@@ -79,4 +81,6 @@ public:
     sf::Sprite& GetSprite();
     sf::Vector2f GetPosition() const;
     void SetPosition(const sf::Vector2f& pos);
+
+    sf::FloatRect GetAttackBox() const { return currentAttackBox; }
 };
