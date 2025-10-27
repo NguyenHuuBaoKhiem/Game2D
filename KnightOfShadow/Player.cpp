@@ -211,21 +211,38 @@ void Player::Update(float deltaTime)
 
     if (state == Attacking1 || state == Attacking2 || state == Attacking3)
     {
-        sf::FloatRect attackBox = sprite.getGlobalBounds();
+        sf::FloatRect attackBox;
 
-        // mở rộng vùng đánh ra 1 chút phía hướng đang facing
+        // Kích thước vùng đánh (tùy bạn chỉnh)
+        attackBox.width = 90.f;   // độ rộng của vùng tấn công
+        attackBox.height = 80.f;  // độ cao (thường bằng nửa chiều cao nhân vật)
+
+        // Căn theo vị trí nhân vật
+        float playerX = sprite.getPosition().x;
+        float playerY = sprite.getPosition().y;
+
+        attackBox.top = playerY - attackBox.height / 2.f;
+
+        // Dời ra trước mặt tùy hướng
+        float offsetX = 0.f; // khoảng cách từ giữa người ra phía trước (bạn có thể thử 30–50)
         if (facingRight)
-            attackBox.left += attackBox.width * 0.3f;
+            attackBox.left = playerX + offsetX;
         else
-            attackBox.left -= attackBox.width * 0.3f;
+            attackBox.left = playerX - (attackBox.width + offsetX);
 
-        // Gửi vùng này ra ngoài để kiểm tra
         currentAttackBox = attackBox;
     }
     else
     {
-        currentAttackBox = sf::FloatRect(); // reset
+        currentAttackBox = sf::FloatRect();
     }
+
+    bodyHitbox.width = 40.f;   // chiều ngang thân
+    bodyHitbox.height = 70.f; // chiều cao thân
+    bodyOffset = sf::Vector2f(-bodyHitbox.width / 2.f, -bodyHitbox.height + 50.f);
+    sf::Vector2f pos = sprite.getPosition();
+    bodyHitbox.left = pos.x + bodyOffset.x;
+    bodyHitbox.top = pos.y + bodyOffset.y;
 }
 
 void Player::Draw(sf::RenderWindow& window)
@@ -233,6 +250,26 @@ void Player::Draw(sf::RenderWindow& window)
     for (const auto& t : dashTrails)
         window.draw(t.sprite);
     window.draw(sprite);
+
+    if (state == Attacking1 || state == Attacking2 || state == Attacking3)
+    {
+        sf::RectangleShape atkBoxShape;
+        atkBoxShape.setPosition(currentAttackBox.left, currentAttackBox.top);
+        atkBoxShape.setSize({ currentAttackBox.width, currentAttackBox.height });
+        atkBoxShape.setFillColor(sf::Color(255, 255, 0, 60)); // vàng trong suốt
+        atkBoxShape.setOutlineColor(sf::Color::Yellow);
+        atkBoxShape.setOutlineThickness(1.f);
+        window.draw(atkBoxShape);
+    }
+
+    // Vẽ vùng thân người (để so sánh)
+    sf::RectangleShape bodyBox;
+    bodyBox.setPosition(bodyHitbox.left, bodyHitbox.top);
+    bodyBox.setSize({ bodyHitbox.width, bodyHitbox.height });
+    bodyBox.setFillColor(sf::Color(255, 0, 0, 40)); // đỏ nhạt trong suốt
+    bodyBox.setOutlineColor(sf::Color::Red);
+    bodyBox.setOutlineThickness(1.f);
+    window.draw(bodyBox);
 }
 
 void Player::ChangeState(PlayerState newState)
@@ -249,7 +286,7 @@ void Player::ChangeState(PlayerState newState)
         attackAnim1.Reset();
         attackSound.setBuffer(at1_buffer);
         attackSound.setPitch(0.95f + (rand() % 5 - 2) / 100.f);
-        attackSound.setVolume(40.f);
+        attackSound.setVolume(25.f);
         attackSound.play();
         {
             sf::Sound temp = attackSound;
@@ -261,7 +298,7 @@ void Player::ChangeState(PlayerState newState)
         attackAnim2.Reset();
         attackSound.setBuffer(at2_buffer);
         attackSound.setPitch(1.00f + (rand() % 5 - 2) / 100.f);
-        attackSound.setVolume(25.f);
+        attackSound.setVolume(15.f);
         attackSound.play();
         {
             sf::Sound temp = attackSound;
@@ -273,7 +310,7 @@ void Player::ChangeState(PlayerState newState)
         attackAnim3.Reset();
         attackSound.setBuffer(at3_buffer);
         attackSound.setPitch(1.05f + (rand() % 5 - 2) / 100.f); // ±2%
-        attackSound.setVolume(15.f);
+        attackSound.setVolume(10.f);
         attackSound.play();
         break;
     }

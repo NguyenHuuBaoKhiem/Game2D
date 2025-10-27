@@ -72,7 +72,7 @@ MenuScreen::MenuScreen(sf::RenderWindow& window)
     startSound.setVolume(100.f);
 
     //Theme
-    musicVolume = 60.f;
+    musicVolume = 40.f;
     if (!bgMusic.openFromFile("Assets/Music/bg_music.ogg")) {
         std::cout << "Error loading menu theme!\n";
     }
