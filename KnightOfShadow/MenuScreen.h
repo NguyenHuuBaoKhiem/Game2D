@@ -14,12 +14,10 @@ private:
     sf::Text pressText;
     sf::RectangleShape fadeRect;
 
-    float fadeAlpha = 255.f;
     float blinkTimer = 0.f;
     float blinkSpeed = 2.f;
     bool showText = true;
 
-    float fadeOutAlpha = 0.f;
 
     sf::SoundBuffer introBuffer;
     sf::Sound introSound;
@@ -30,6 +28,8 @@ private:
 
 
 public:
+    float fadeAlpha = 255.f;
+    float fadeOutAlpha = 0.f;
     bool isActive = true;
     bool isFadingOut = false;
 

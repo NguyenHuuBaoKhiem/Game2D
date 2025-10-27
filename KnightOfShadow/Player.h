@@ -63,7 +63,10 @@ private:
     float dashCooldown = 0.5f;    // thời gian hồi dash
     float dashCooldownTimer = 0.f;
 
-    sf::FloatRect currentAttackBox;
+    sf::FloatRect currentAttackBox; //Hitbox đánh
+
+    sf::FloatRect bodyHitbox;   //Hitbox bị đánh
+    sf::Vector2f bodyOffset;
 
 public:
     // Constructor đồng bộ với Player.cpp
