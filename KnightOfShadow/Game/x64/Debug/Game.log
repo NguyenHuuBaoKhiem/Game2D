@@ -1,5 +1,6 @@
-﻿  MenuScreen.cpp
-  Player.cpp
+﻿  Animation.cpp
   main.cpp
+  MenuScreen.cpp
+  Player.cpp
   Generating Code...
   Game.vcxproj -> D:\Github\Game2D\KnightOfShadow\x64\Debug\Game.exe

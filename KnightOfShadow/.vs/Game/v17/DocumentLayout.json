@@ -54,8 +54,7 @@
               "RelativeToolTip": "MenuScreen.cpp",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAEoAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-10-26T10:43:49.505Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-26T10:43:49.505Z"
             },
             {
               "$type": "Document",
@@ -101,7 +100,7 @@
               "RelativeDocumentMoniker": "Player.cpp",
               "ToolTip": "D:\\Github\\Game2D\\KnightOfShadow\\Player.cpp",
               "RelativeToolTip": "Player.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAsAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-10-19T09:55:10.856Z",
               "EditorCaption": ""
@@ -128,8 +127,7 @@
               "RelativeToolTip": "Player.h",
               "ViewState": "AgIAAC0AAAAAAAAAAAAAAEQAAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-10-12T04:16:51.36Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-12T04:16:51.36Z"
             },
             {
               "$type": "Document",
@@ -141,8 +139,7 @@
               "RelativeToolTip": "main.cpp",
               "ViewState": "AgIAAAgAAAAAAAAAAAAAABAAAAA5AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-10-08T08:42:48.602Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-08T08:42:48.602Z"
             }
           ]
         }

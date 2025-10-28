@@ -50,12 +50,11 @@
               "Title": "MenuScreen.cpp",
               "DocumentMoniker": "D:\\Github\\Game2D\\KnightOfShadow\\MenuScreen.cpp",
               "RelativeDocumentMoniker": "MenuScreen.cpp",
-              "ToolTip": "D:\\Github\\Game2D\\KnightOfShadow\\MenuScreen.cpp*",
-              "RelativeToolTip": "MenuScreen.cpp*",
+              "ToolTip": "D:\\Github\\Game2D\\KnightOfShadow\\MenuScreen.cpp",
+              "RelativeToolTip": "MenuScreen.cpp",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAEoAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-10-26T10:43:49.505Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-26T10:43:49.505Z"
             },
             {
               "$type": "Document",
@@ -99,9 +98,9 @@
               "Title": "Player.cpp",
               "DocumentMoniker": "D:\\Github\\Game2D\\KnightOfShadow\\Player.cpp",
               "RelativeDocumentMoniker": "Player.cpp",
-              "ToolTip": "D:\\Github\\Game2D\\KnightOfShadow\\Player.cpp*",
-              "RelativeToolTip": "Player.cpp*",
-              "ViewState": "AgIAAMoAAAAAAAAAAAAAANcAAAAvAAAAAAAAAA==",
+              "ToolTip": "D:\\Github\\Game2D\\KnightOfShadow\\Player.cpp",
+              "RelativeToolTip": "Player.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-10-19T09:55:10.856Z",
               "EditorCaption": ""
@@ -124,12 +123,11 @@
               "Title": "Player.h",
               "DocumentMoniker": "D:\\Github\\Game2D\\KnightOfShadow\\Player.h",
               "RelativeDocumentMoniker": "Player.h",
-              "ToolTip": "D:\\Github\\Game2D\\KnightOfShadow\\Player.h*",
-              "RelativeToolTip": "Player.h*",
+              "ToolTip": "D:\\Github\\Game2D\\KnightOfShadow\\Player.h",
+              "RelativeToolTip": "Player.h",
               "ViewState": "AgIAAC0AAAAAAAAAAAAAAEQAAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-10-12T04:16:51.36Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-12T04:16:51.36Z"
             },
             {
               "$type": "Document",
@@ -141,8 +139,7 @@
               "RelativeToolTip": "main.cpp",
               "ViewState": "AgIAAAgAAAAAAAAAAAAAABAAAAA5AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-10-08T08:42:48.602Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-10-08T08:42:48.602Z"
             }
           ]
         }
