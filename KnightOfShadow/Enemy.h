@@ -23,12 +23,10 @@ private:
 
     sf::Sprite sprite;
     sf::Vector2f velocity;
-
-    bool facingRight = true; // Hướng mặt của enemy (true: phải, false: trái)
-
+    bool facingRight = true;
     EnemyState state;
 
-    // Các animation
+    // Animation
     Animation idleAnim;
     Animation walkAnim;
     Animation attackAnim;
@@ -37,35 +35,35 @@ private:
 
     // Vật lý
     bool isOnGround = true;
-    float gravity = 900.f; // Lực hấp dẫn (giống player)
-    float groundY = 400.f; // Vị trí mặt đất (giống player)
+    float gravity = 900.f;
+    float groundY = 400.f;
 
-    // Biến cho hành vi của enemy
-    float moveSpeed = 100.f; // Tốc độ di chuyển
-    float detectionRange = 300.f; // Phạm vi phát hiện player
-    float attackRange = 50.f; // Phạm vi tấn công
-    float attackCooldown = 1.0f; // Thời gian hồi chiêu tấn công
-    float attackCooldownTimer = 0.f; // Timer để đếm thời gian hồi chiêu
-    int health = 100; // Máu của enemy
+    // Hành vi
+    float moveSpeed = 100.f;
+    float detectionRange = 2000.f;
+    float attackRange = 200.f;
+    float attackCooldown = 1.0f;
+    float attackCooldownTimer = 0.f;
+    int health = 10000;
 
-    sf::FloatRect currentAttackBox; // Hitbox tấn công
-    sf::FloatRect bodyHitbox; // Hitbox thân (để nhận sát thương)
-    sf::Vector2f bodyOffset; // Offset để căn chỉnh hitbox thân
+    // Hitbox
+    sf::FloatRect currentAttackBox;
+    sf::FloatRect bodyHitbox;
+    sf::Vector2f bodyOffset;
+    sf::FloatRect detectionArea;
 
 public:
     // Constructor
     Enemy(sf::Texture& texIdle, sf::Texture& texWalk, sf::Texture& texAttack,
         sf::Texture& texTakeHit, sf::Texture& texDeath);
 
-    // Hàm xử lý logic
+    // Hàm xử lý
     void HandleInput(float deltaTime, const sf::Vector2f& playerPosition);
     void Update(float deltaTime);
     void Draw(sf::RenderWindow& window);
 
     // Quản lý trạng thái
     void ChangeState(EnemyState newState);
-
-    // Nhận sát thương
     void TakeDamage(int damage);
 
     // Getter
