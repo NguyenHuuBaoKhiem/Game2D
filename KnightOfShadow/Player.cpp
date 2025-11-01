@@ -38,7 +38,7 @@ Player::Player(sf::Texture& texIdle, sf::Texture& texWalk,
 
     // Đặt origin theo frame đầu tiên để nhân vật đứng vững
     auto rect = idleAnim.GetRect();
-    sprite.setPosition(800, 400);
+    sprite.setPosition(800, 800);
     sprite.setOrigin(384 / 2.f, 192 / 2.f);
     sprite.setScale(1.f, 1.f);
 }

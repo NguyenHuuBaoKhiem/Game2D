@@ -53,7 +53,7 @@ private:
     bool isOnGround = true;
     float gravity = 900.f;      // lực hấp dẫn
     float jumpStrength = -450.f; // lực nhảy (âm vì hướng lên trên)
-    float groundY = 400.f; // y = vị trí mặt đất
+    float groundY = 500.f; // y = vị trí mặt đất
 
     // Dash variables
     bool isDashing = false;
@@ -86,4 +86,5 @@ public:
     void SetPosition(const sf::Vector2f& pos);
 
     sf::FloatRect GetAttackBox() const { return currentAttackBox; }
+    sf::FloatRect GetGlobalBounds() const { return sprite.getGlobalBounds(); }
 };
