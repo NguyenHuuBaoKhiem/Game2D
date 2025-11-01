@@ -1,6 +1,9 @@
-﻿  Animation.cpp
-  main.cpp
+﻿  BossAnimation.cpp
+C:\Users\TUF\Downloads\Game2D\KnightOfShadow\BossAnimation.cpp(36,46): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  Enemy.cpp
   MenuScreen.cpp
   Player.cpp
+  main.cpp
+C:\Users\TUF\Downloads\Game2D\KnightOfShadow\main.cpp(38,22): warning C4566: character represented by universal-character-name '\u274C' cannot be represented in the current code page (1252)
   Generating Code...
-  Game.vcxproj -> D:\Github\Game2D\KnightOfShadow\x64\Debug\Game.exe
+  Game.vcxproj -> C:\Users\TUF\Downloads\Game2D\KnightOfShadow\x64\Debug\Game.exe

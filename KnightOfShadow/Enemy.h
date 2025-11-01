@@ -1,9 +1,9 @@
-#pragma once
+﻿#pragma once
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
-#include "Animation.h"
+#include "BossAnimation.h"
 
-enum EnemyState {
+enum class EnemyState {
     Idle,
     Walking,
     Attacking,
@@ -13,7 +13,7 @@ enum EnemyState {
 
 class Enemy {
 private:
-    // Âm thanh
+    // --- Âm thanh ---
     sf::SoundBuffer attackBuffer;
     sf::Sound attackSound;
     sf::SoundBuffer takeHitBuffer;
@@ -21,52 +21,57 @@ private:
     sf::SoundBuffer deathBuffer;
     sf::Sound deathSound;
 
+    // --- Sprite & trạng thái ---
     sf::Sprite sprite;
     sf::Vector2f velocity;
     bool facingRight = true;
     EnemyState state;
 
-    // Animation
-    Animation idleAnim;
-    Animation walkAnim;
-    Animation attackAnim;
-    Animation takeHitAnim;
-    Animation deathAnim;
+    // --- Animation (Boss) ---
+    BossAnimation idleAnim;
+    BossAnimation walkAnim;
+    BossAnimation attackAnim;
+    BossAnimation takeHitAnim;
+    BossAnimation deathAnim;
 
-    // Vật lý
+    // --- Vật lý ---
     bool isOnGround = true;
     float gravity = 900.f;
     float groundY = 400.f;
 
-    // Hành vi
+    // --- Hành vi ---
     float moveSpeed = 100.f;
-    float detectionRange = 2000.f;
+    float detectionRange = 900.f;
     float attackRange = 200.f;
     float attackCooldown = 1.0f;
     float attackCooldownTimer = 0.f;
-    int health = 10000;
+    int health = 10000000;
+    float attackActiveTime = 0.65f;  // Delay trước khi kích hoạt hitbox
+    float attackDuration = 0.7f;     // Thời gian hitbox tồn tại
+    bool hitboxActive = false;
+    float attackTimer = 0.f;
 
-    // Hitbox
+    // --- Hitbox ---
     sf::FloatRect currentAttackBox;
     sf::FloatRect bodyHitbox;
     sf::Vector2f bodyOffset;
     sf::FloatRect detectionArea;
 
 public:
-    // Constructor
+    // --- Constructor ---
     Enemy(sf::Texture& texIdle, sf::Texture& texWalk, sf::Texture& texAttack,
         sf::Texture& texTakeHit, sf::Texture& texDeath);
 
-    // Hàm xử lý
+    // --- Hành vi ---
     void HandleInput(float deltaTime, const sf::Vector2f& playerPosition);
     void Update(float deltaTime);
     void Draw(sf::RenderWindow& window);
 
-    // Quản lý trạng thái
+    // --- Quản lý trạng thái ---
     void ChangeState(EnemyState newState);
     void TakeDamage(int damage);
 
-    // Getter
+    // --- Getter / Setter ---
     sf::Sprite& GetSprite();
     sf::Vector2f GetPosition() const;
     void SetPosition(const sf::Vector2f& pos);
