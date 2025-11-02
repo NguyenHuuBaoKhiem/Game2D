@@ -1,14 +1,12 @@
-﻿#include "Enemy.h"
+﻿#include "Enemy1.h"
 #include <cmath>
 #include <iostream>
 
-Enemy::Enemy(sf::Texture& texIdle, sf::Texture& texWalk, sf::Texture& texAttack,
-    sf::Texture& texTakeHit, sf::Texture& texDeath)
+Enemy1::Enemy1(sf::Texture& texIdle, sf::Texture& texWalk, sf::Texture& texAttack,sf::Texture& texDeath)
     : idleAnim(texIdle, { 6, 1 }, 0.2f),
     walkAnim(texWalk, { 12, 1 }, 0.1f),
     attackAnim(texAttack, { 15, 1 }, 0.08f, false),
-    takeHitAnim(texTakeHit, { 5, 1 }, 0.1f, false),
-    deathAnim(texDeath, { 22, 1 }, 0.1f, false)
+    deathAnim(texDeath, { 19, 1 }, 0.15f, false)
 {
     state = EnemyState::Idle;
 
@@ -19,17 +17,15 @@ Enemy::Enemy(sf::Texture& texIdle, sf::Texture& texWalk, sf::Texture& texAttack,
     sprite.setOrigin(rect.width / 2.f, rect.height / 2.f);
     sprite.setScale(1.f, 1.f);
 
-    // Khởi tạo hitbox trống ban đầu
     currentAttackBox = sf::FloatRect();
     bodyHitbox = sf::FloatRect();
 }
 
-void Enemy::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
+void Enemy1::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
 {
     velocity.x = 0.f;
 
-    // Nếu boss đang tấn công hoặc trúng đòn hoặc chết => không điều khiển
-    if (state == EnemyState::Attacking || state == EnemyState::TakeHit || state == EnemyState::Death)
+    if (state == EnemyState::Attacking || state == EnemyState::Death || isDead)
     {
         if (attackCooldownTimer > 0)
             attackCooldownTimer -= deltaTime;
@@ -38,7 +34,7 @@ void Enemy::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
 
     sf::Vector2f direction = playerPosition - sprite.getPosition();
     float distance = std::hypot(direction.x, direction.y);
-    facingRight = direction.x < 0; // hướng về player
+    facingRight = direction.x < 0;
 
     if (distance <= attackRange && attackCooldownTimer <= 0.f)
     {
@@ -65,12 +61,19 @@ void Enemy::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
         attackCooldownTimer -= deltaTime;
 }
 
-void Enemy::Update(float deltaTime)
+void Enemy1::Update(float deltaTime)
 {
+    UpdateHitCooldown(deltaTime);
+
+    if (isDead)
+    {
+        if (state != EnemyState::Death)
+            ChangeState(EnemyState::Death);
+    }
+
     if (state == EnemyState::Death && deathAnim.IsFinished())
         return;
 
-    // Vật lý rơi cơ bản
     if (!isOnGround)
         velocity.y += gravity * deltaTime;
 
@@ -83,7 +86,6 @@ void Enemy::Update(float deltaTime)
         isOnGround = true;
     }
 
-    // Animation hiện tại
     const sf::Texture* currentTexture = nullptr;
     sf::IntRect currentRect;
 
@@ -108,7 +110,6 @@ void Enemy::Update(float deltaTime)
 
         attackTimer += deltaTime;
 
-        // Bật/tắt hitbox theo thời gian
         if (attackTimer >= attackActiveTime && attackTimer <= attackActiveTime + attackDuration)
             hitboxActive = true;
         else
@@ -122,18 +123,15 @@ void Enemy::Update(float deltaTime)
         }
         break;
 
-    case EnemyState::TakeHit:
-        takeHitAnim.Update(deltaTime);
-        currentTexture = takeHitAnim.GetTexture();
-        currentRect = takeHitAnim.GetRect();
-        if (takeHitAnim.IsFinished())
-            ChangeState(EnemyState::Idle);
-        break;
-
     case EnemyState::Death:
         deathAnim.Update(deltaTime);
         currentTexture = deathAnim.GetTexture();
         currentRect = deathAnim.GetRect();
+
+        // Nếu animation chết đã chạy hết → đánh dấu hoàn tất
+        if (deathAnim.IsFinished()) {
+            deathAnimFinished = true; // <--- biến có sẵn trong BaseEnemy
+        }
         break;
     }
 
@@ -141,7 +139,6 @@ void Enemy::Update(float deltaTime)
         sprite.setTexture(*currentTexture);
     sprite.setTextureRect(currentRect);
 
-    // --- HITBOX TẤN CÔNG ---
     if (state == EnemyState::Attacking && hitboxActive)
     {
         sf::FloatRect attackBox;
@@ -150,7 +147,7 @@ void Enemy::Update(float deltaTime)
         float enemyX = sprite.getPosition().x;
         float enemyY = sprite.getPosition().y;
         attackBox.top = enemyY - 100.f;
-        float offsetX = - 30.f;
+        float offsetX = -30.f;
         if (facingRight)
             attackBox.left = enemyX - (attackBox.width + offsetX);
         else
@@ -160,7 +157,6 @@ void Enemy::Update(float deltaTime)
     else
         currentAttackBox = sf::FloatRect();
 
-    // --- HITBOX THÂN ---
     bodyHitbox.width = 200.f;
     bodyHitbox.height = 200.f;
     bodyOffset = sf::Vector2f(-bodyHitbox.width / 2.f, -bodyHitbox.height / 2.f);
@@ -169,11 +165,10 @@ void Enemy::Update(float deltaTime)
     bodyHitbox.top = pos.y + (bodyOffset.y + 50.f);
 }
 
-void Enemy::Draw(sf::RenderWindow& window)
+void Enemy1::Draw(sf::RenderWindow& window)
 {
     window.draw(sprite);
 
-    // Hitbox tấn công (vàng)
     if (state == EnemyState::Attacking && hitboxActive)
     {
         sf::RectangleShape atkBoxShape;
@@ -185,7 +180,6 @@ void Enemy::Draw(sf::RenderWindow& window)
         window.draw(atkBoxShape);
     }
 
-    // Hitbox thân (đỏ)
     sf::RectangleShape bodyBox;
     bodyBox.setPosition(bodyHitbox.left, bodyHitbox.top);
     bodyBox.setSize({ bodyHitbox.width, bodyHitbox.height });
@@ -195,7 +189,7 @@ void Enemy::Draw(sf::RenderWindow& window)
     window.draw(bodyBox);
 }
 
-void Enemy::ChangeState(EnemyState newState)
+void Enemy1::ChangeState(EnemyState newState)
 {
     if (state == newState || state == EnemyState::Death)
         return;
@@ -206,27 +200,11 @@ void Enemy::ChangeState(EnemyState newState)
     case EnemyState::Idle: idleAnim.Reset(); break;
     case EnemyState::Walking: walkAnim.Reset(); break;
     case EnemyState::Attacking: attackAnim.Reset(); break;
-    case EnemyState::TakeHit: takeHitAnim.Reset(); break;
     case EnemyState::Death: deathAnim.Reset(); break;
     }
 }
 
-void Enemy::TakeDamage(int damage)
+void Enemy1::TakeDamage(int damage)
 {
-    if (state == EnemyState::Death) return;
-    health -= damage;
-    if (health <= 0)
-        ChangeState(EnemyState::Death);
-    else
-        ChangeState(EnemyState::TakeHit);
+    BaseEnemy::TakeDamage(damage);
 }
-
-bool Enemy::IsDead() const
-{
-    return state == EnemyState::Death && deathAnim.IsFinished();
-}
-
-// Getter / Setter
-sf::Sprite& Enemy::GetSprite() { return sprite; }
-sf::Vector2f Enemy::GetPosition() const { return sprite.getPosition(); }
-void Enemy::SetPosition(const sf::Vector2f& pos) { sprite.setPosition(pos); }
