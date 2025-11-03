@@ -2,13 +2,18 @@
 #include <cmath>
 #include <iostream>
 
-Enemy1::Enemy1(sf::Texture& texIdle, sf::Texture& texWalk, sf::Texture& texAttack,sf::Texture& texDeath)
+Enemy1::Enemy1(sf::Texture& texIdle, sf::Texture& texWalk, sf::Texture& texAttack,
+    sf::Texture& texAttack1, sf::Texture& texAttack2,
+    sf::Texture& texDeath)
     : idleAnim(texIdle, { 6, 1 }, 0.2f),
     walkAnim(texWalk, { 12, 1 }, 0.1f),
     attackAnim(texAttack, { 15, 1 }, 0.08f, false),
+    attack1Anim(texAttack1, { 9, 2 }, 0.08f, false),
+    attack2Anim(texAttack2, { 10, 2 }, 0.1f, false),
     deathAnim(texDeath, { 19, 1 }, 0.15f, false)
 {
     state = EnemyState::Idle;
+    attackType = BossAttackType::None;
 
     sprite.setTexture(texIdle);
     sprite.setTextureRect(idleAnim.GetRect());
@@ -36,10 +41,33 @@ void Enemy1::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
     float distance = std::hypot(direction.x, direction.y);
     facingRight = direction.x < 0;
 
-    if (distance <= attackRange && attackCooldownTimer <= 0.f)
+    if (distance <= attackRange)
     {
-        ChangeState(EnemyState::Attacking);
-        attackCooldownTimer = attackCooldown;
+        attackTimer += deltaTime;
+
+        if (attackTimer >= attackCooldown)
+        {
+            attackTimer = 0.f;
+
+            // Random 1 trong 3 đòn tấn công
+            int randomAttack = rand() % 3; // 0,1,2
+            switch (randomAttack)
+            {
+            case 0:
+                attackType = BossAttackType::Attack;
+                break;
+            case 1:
+                attackType = BossAttackType::Attack1;
+                break;
+            case 2:
+                attackType = BossAttackType::Attack2;
+                break;
+            }
+
+            ChangeState(EnemyState::Attacking);
+            hitboxActive = false;
+            attackCooldownTimer = 0.f;
+        }
     }
     else if (distance <= detectionRange)
     {
@@ -104,34 +132,15 @@ void Enemy1::Update(float deltaTime)
         break;
 
     case EnemyState::Attacking:
-        attackAnim.Update(deltaTime);
-        currentTexture = attackAnim.GetTexture();
-        currentRect = attackAnim.GetRect();
-
-        attackTimer += deltaTime;
-
-        if (attackTimer >= attackActiveTime && attackTimer <= attackActiveTime + attackDuration)
-            hitboxActive = true;
-        else
-            hitboxActive = false;
-
-        if (attackAnim.IsFinished())
-        {
-            ChangeState(EnemyState::Idle);
-            attackTimer = 0.f;
-            hitboxActive = false;
-        }
+        UpdateAttackAnim(deltaTime, currentTexture, currentRect);
         break;
 
     case EnemyState::Death:
         deathAnim.Update(deltaTime);
         currentTexture = deathAnim.GetTexture();
         currentRect = deathAnim.GetRect();
-
-        // Nếu animation chết đã chạy hết → đánh dấu hoàn tất
-        if (deathAnim.IsFinished()) {
-            deathAnimFinished = true; // <--- biến có sẵn trong BaseEnemy
-        }
+        if (deathAnim.IsFinished())
+            deathAnimFinished = true;
         break;
     }
 
@@ -139,24 +148,47 @@ void Enemy1::Update(float deltaTime)
         sprite.setTexture(*currentTexture);
     sprite.setTextureRect(currentRect);
 
+    // Hitbox tấn công
     if (state == EnemyState::Attacking && hitboxActive)
     {
         sf::FloatRect attackBox;
-        attackBox.width = 250.f;
-        attackBox.height = 250.f;
         float enemyX = sprite.getPosition().x;
         float enemyY = sprite.getPosition().y;
-        attackBox.top = enemyY - 100.f;
-        float offsetX = -30.f;
-        if (facingRight)
-            attackBox.left = enemyX - (attackBox.width + offsetX);
-        else
-            attackBox.left = enemyX + offsetX;
+
+        switch (attackType)
+        {
+        case BossAttackType::Attack:
+            attackBox.width = 250.f;
+            attackBox.height = 250.f;
+            attackBox.top = enemyY - 100.f;
+            attackBox.left = facingRight ? enemyX - 220.f : enemyX + 20.f;
+            break;
+
+        case BossAttackType::Attack1:
+            attackBox.width = 300.f;
+            attackBox.height = 250.f;
+            attackBox.top = enemyY - 50.f;
+            attackBox.left = facingRight ? enemyX - 270.f : enemyX + 20.f;
+            break;
+
+        case BossAttackType::Attack2:
+            attackBox.width = 300.f;
+            attackBox.height = 400.f;
+            attackBox.top = enemyY - 200.f;
+            attackBox.left = facingRight ? enemyX - 300.f : enemyX + 20.f;
+            break;
+
+        default:
+            attackBox = sf::FloatRect();
+            break;
+        }
+
         currentAttackBox = attackBox;
     }
     else
         currentAttackBox = sf::FloatRect();
 
+    // Hitbox thân
     bodyHitbox.width = 200.f;
     bodyHitbox.height = 200.f;
     bodyOffset = sf::Vector2f(-bodyHitbox.width / 2.f, -bodyHitbox.height / 2.f);
@@ -164,6 +196,70 @@ void Enemy1::Update(float deltaTime)
     bodyHitbox.left = pos.x + bodyOffset.x;
     bodyHitbox.top = pos.y + (bodyOffset.y + 50.f);
 }
+
+void Enemy1::UpdateAttackAnim(float deltaTime, const sf::Texture*& tex, sf::IntRect& rect)
+{
+    attackTimer += deltaTime;
+
+    switch (attackType)
+    {
+    case BossAttackType::Attack:
+        attackAnim.Update(deltaTime);
+        tex = attackAnim.GetTexture();
+        rect = attackAnim.GetRect();
+        break;
+    case BossAttackType::Attack1:
+        attack1Anim.Update(deltaTime);
+        tex = attack1Anim.GetTexture();
+        rect = attack1Anim.GetRect();
+        break;
+    case BossAttackType::Attack2:
+        attack2Anim.Update(deltaTime);
+        tex = attack2Anim.GetTexture();
+        rect = attack2Anim.GetRect();
+        break;
+    default:
+        tex = idleAnim.GetTexture();
+        rect = idleAnim.GetRect();
+        break;
+    }
+
+    switch (attackType)
+    {
+    case BossAttackType::Attack:
+        hitboxActive = (attackTimer >= attackActiveTime_Attack &&
+            attackTimer <= attackActiveTime_Attack + attackDuration_Attack);
+        break;
+
+    case BossAttackType::Attack1:
+        hitboxActive = (attackTimer >= attackActiveTime_Attack1 &&
+            attackTimer <= attackActiveTime_Attack1 + attackDuration_Attack1);
+        break;
+
+    case BossAttackType::Attack2:
+        hitboxActive = (attackTimer >= attackActiveTime_Attack2 &&
+            attackTimer <= attackActiveTime_Attack2 + attackDuration_Attack2);
+        break;
+
+    default:
+        hitboxActive = false;
+        break;
+    }
+
+    bool finished = false;
+    if (attackType == BossAttackType::Attack) finished = attackAnim.IsFinished();
+    if (attackType == BossAttackType::Attack1) finished = attack1Anim.IsFinished();
+    if (attackType == BossAttackType::Attack2) finished = attack2Anim.IsFinished();
+
+    if (finished)
+    {
+        ChangeState(EnemyState::Idle);
+        attackType = BossAttackType::None;
+        attackTimer = 0.f;
+        hitboxActive = false;
+    }
+}
+
 
 void Enemy1::Draw(sf::RenderWindow& window)
 {
@@ -180,6 +276,7 @@ void Enemy1::Draw(sf::RenderWindow& window)
         window.draw(atkBoxShape);
     }
 
+    // Hitbox thân
     sf::RectangleShape bodyBox;
     bodyBox.setPosition(bodyHitbox.left, bodyHitbox.top);
     bodyBox.setSize({ bodyHitbox.width, bodyHitbox.height });
@@ -195,11 +292,16 @@ void Enemy1::ChangeState(EnemyState newState)
         return;
 
     state = newState;
+
     switch (state)
     {
     case EnemyState::Idle: idleAnim.Reset(); break;
     case EnemyState::Walking: walkAnim.Reset(); break;
-    case EnemyState::Attacking: attackAnim.Reset(); break;
+    case EnemyState::Attacking:
+        if (attackType == BossAttackType::Attack) attackAnim.Reset();
+        else if (attackType == BossAttackType::Attack1) attack1Anim.Reset();
+        else if (attackType == BossAttackType::Attack2) attack2Anim.Reset();
+        break;
     case EnemyState::Death: deathAnim.Reset(); break;
     }
 }

@@ -31,15 +31,17 @@ int main() {
     EnemyManager enemyManager;
 
     // --- BOSS ---
-    sf::Texture tIdle, tWalk, tAttack, tDeath;
+    sf::Texture tIdle, tWalk, tAttack, tDeath, tAttack1, tAttack2;
     if (!tIdle.loadFromFile("Assets/Images/Enemy/idle.png") ||
         !tWalk.loadFromFile("Assets/Images/Enemy/walk.png") ||
         !tAttack.loadFromFile("Assets/Images/Enemy/attack.png") ||
-        !tDeath.loadFromFile("Assets/Images/Enemy/tile000.png")) {
+        !tAttack1.loadFromFile("Assets/Images/Enemy/at1.png") ||
+		!tAttack2.loadFromFile("Assets/Images/Enemy/at2.png") ||
+        !tDeath.loadFromFile("Assets/Images/Enemy/death.png")) {
         return 1;
     }
 
-    auto boss = std::make_unique<Enemy1>(tIdle, tWalk, tAttack, tDeath);
+    auto boss = std::make_unique<Enemy1>(tIdle, tWalk, tAttack, tAttack1, tAttack2, tDeath);
     boss->SetPosition({ 1000.f, 500.f });
     enemyManager.AddEnemy(std::move(boss));
 
