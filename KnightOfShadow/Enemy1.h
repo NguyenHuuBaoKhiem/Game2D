@@ -10,7 +10,6 @@ private:
     BossAnimation attackAnim;
     BossAnimation deathAnim;
 
-
     // --- Hành vi ---
     float moveSpeed = 100.f;
     float detectionRange = 700.f;
@@ -21,8 +20,6 @@ private:
     float attackDuration = 0.7f;
     bool hitboxActive = false;
     float attackTimer = 0.f;
-
-  
 
 public:
     // --- Constructor ---

@@ -6,7 +6,7 @@ Enemy1::Enemy1(sf::Texture& texIdle, sf::Texture& texWalk, sf::Texture& texAttac
     : idleAnim(texIdle, { 6, 1 }, 0.2f),
     walkAnim(texWalk, { 12, 1 }, 0.1f),
     attackAnim(texAttack, { 15, 1 }, 0.08f, false),
-    deathAnim(texDeath, { 19, 1 }, 0.15f, false)
+    deathAnim(texDeath, { 10, 2 }, 0.15f, false)
 {
     state = EnemyState::Idle;
 
