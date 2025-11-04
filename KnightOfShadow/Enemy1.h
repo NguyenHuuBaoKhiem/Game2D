@@ -21,11 +21,15 @@ private:
 
     // === Tấn công ===
     BossAttackType attackType = BossAttackType::None;
-    float attackTimer = 0.f;
-    float attackActiveTime = 0.45f;
-    float attackDuration = 0.4f;
+    // --- Hành vi ---
+    float moveSpeed = 100.f;
+    float detectionRange = 700.f;
+    float attackRange = 200.f;
+
     float attackCooldown = 0.2f;
     float attackCooldownTimer = 0.f;
+    float attackTimer = 0.f;
+
     float attackActiveTime_Attack = 0.3f;
     float attackDuration_Attack = 0.7f;
     float attackActiveTime_Attack1 = 0.8f;
@@ -33,11 +37,6 @@ private:
     float attackActiveTime_Attack2 = 0.5f;
     float attackDuration_Attack2 = 1.0f;
     bool hitboxActive = false;
-
-    // === Hành vi ===
-    float moveSpeed = 100.f;
-    float detectionRange = 800.f;
-    float attackRange = 250.f;
 
     // === Hàm nội bộ ===
     void UpdateAttackAnim(float deltaTime, const sf::Texture*& tex, sf::IntRect& rect);

@@ -5,12 +5,12 @@
 Enemy1::Enemy1(sf::Texture& texIdle, sf::Texture& texWalk, sf::Texture& texAttack,
     sf::Texture& texAttack1, sf::Texture& texAttack2,
     sf::Texture& texDeath)
-    : idleAnim(texIdle, { 6, 1 }, 0.2f),
+    :idleAnim(texIdle, { 6, 1 }, 0.2f),
     walkAnim(texWalk, { 12, 1 }, 0.1f),
     attackAnim(texAttack, { 15, 1 }, 0.08f, false),
     attack1Anim(texAttack1, { 9, 2 }, 0.08f, false),
     attack2Anim(texAttack2, { 10, 2 }, 0.1f, false),
-    deathAnim(texDeath, { 19, 1 }, 0.15f, false)
+    deathAnim(texDeath, { 10, 2 }, 0.15f, false)
 {
     state = EnemyState::Idle;
     attackType = BossAttackType::None;
