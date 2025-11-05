@@ -18,7 +18,7 @@ protected:
     EnemyState state = EnemyState::Idle;
     bool facingRight = true;
     bool isDead = false;
-    float health = 10000.f;
+    float health = 100.f;
 
     // --- Vật lý ---
     sf::Vector2f velocity;

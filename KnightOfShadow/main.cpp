@@ -41,9 +41,20 @@ int main() {
         return 1;
     }
 
+    //sf::Texture tIdlee, tWalkk, tAttackk, tDeathh;
+    //if (!tIdlee.loadFromFile("Assets/Images/Enemy/idle_1.png") ||
+    //    !tWalkk.loadFromFile("Assets/Images/Enemy/walk_1.png") ||
+    //    !tAttackk.loadFromFile("Assets/Images/Enemy/attack_1.png") ||
+    //    !tDeathh.loadFromFile("Assets/Images/Enemy/death_1.png")) {
+    //    return 1;
+    //}
+
     auto boss = std::make_unique<Enemy1>(tIdle, tWalk, tAttack, tAttack1, tAttack2, tDeath);
     boss->SetPosition({ 1000.f, 500.f });
     enemyManager.AddEnemy(std::move(boss));
+    //auto boss2 = std::make_unique<Enemy2>(tIdlee, tWalkk, tAttackk, tDeathh);
+    //boss2->SetPosition({ 1000.f, 700.f });
+    //enemyManager.AddEnemy(std::move(boss2));
 
     sf::Clock clock;
 
@@ -86,7 +97,7 @@ int main() {
                 if ((player.GetState() == PlayerState::Attacking1 ||
                     player.GetState() == PlayerState::Attacking2 ||
                     player.GetState() == PlayerState::Attacking3) &&
-                    player.GetAttackBox().intersects(e->GetSprite().getGlobalBounds()))
+                    player.GetAttackBox().intersects(e->GetBodyHitbox()))
                 {
                     e->TakeDamage(20);
                 }

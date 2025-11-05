@@ -165,10 +165,10 @@ void Enemy1::Update(float deltaTime)
             break;
 
         case BossAttackType::Attack1:
-            attackBox.width = 300.f;
-            attackBox.height = 250.f;
-            attackBox.top = enemyY - 50.f;
-            attackBox.left = facingRight ? enemyX - 270.f : enemyX + 20.f;
+            attackBox.width = 500.f;
+            attackBox.height = 50.f;
+            attackBox.top = enemyY + 130.f;
+            attackBox.left = enemyX - attackBox.width / 2.f;
             break;
 
         case BossAttackType::Attack2:
