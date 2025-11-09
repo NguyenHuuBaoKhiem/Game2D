@@ -17,20 +17,22 @@ int main() {
     //map.Load("Assets/Images/Map/Map.ldtk", "Level_0");
 
     // --- PLAYER ---
-    sf::Texture texIdle, texWalk, texAttack1, texAttack2, texAttack3;
+    sf::Texture texIdle, texWalk, texAttack1, texAttack2, texAttack3, texSkill1;
     texWalk.loadFromFile("Assets/Images/Player/run.png");
     texIdle.loadFromFile("Assets/Images/Player/idle.png");
     texAttack1.loadFromFile("Assets/Images/Player/at1.png");
     texAttack2.loadFromFile("Assets/Images/Player/at2.png");
     texAttack3.loadFromFile("Assets/Images/Player/at3.png");
+    texSkill1.loadFromFile("Assets/Images/Player/skill1.png");
 
     texIdle.setSmooth(true);
     texWalk.setSmooth(true);
     texAttack1.setSmooth(true);
     texAttack2.setSmooth(true);
     texAttack3.setSmooth(true);
+    texSkill1.setSmooth(true);
 
-    Player player(texIdle, texWalk, texAttack1, texAttack2, texAttack3);
+    Player player(texIdle, texWalk, texAttack1, texAttack2, texAttack3, texSkill1);
     player.SetPosition(sf::Vector2f(200.f, 500.f));
 
     EnemyManager enemyManager;
@@ -106,16 +108,22 @@ int main() {
                 {
                     e->TakeDamage(20);
                 }
+                if (player.GetState() == PlayerState::Skill1 &&
+                    player.GetSkill1Hitbox().intersects(e->GetBodyHitbox()))
+                {
+                    e->TakeDamage(50);
+                }
             }
 
-            // --- Va chạm: Boss tấn công Player ---
-            // (Nếu bạn muốn boss gây damage)
-            // Giả sử Enemy1 có GetAttackBox() thì:
-            // if (boss.IsAttacking() && boss.GetAttackBox().intersects(player.GetBodyHitbox()))
-            //     player.TakeDamage(15);
+            for (const auto& e : enemyManager.GetEnemies())
+            {
+                // chỉ khi boss đang đánh và hitbox đang bật
+                if (e->IsAttacking() && e->GetAttackBox().intersects(player.GetBodyHitbox()))
+                {
+                    player.TakeDamage(15); // hoặc tuỳ từng skill
+                }
+            }
 
-            // --- Vẽ ---
-			//map.Draw(window);
             player.Draw(window);
             enemyManager.DrawAll(window);
         }
