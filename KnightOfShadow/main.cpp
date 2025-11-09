@@ -13,8 +13,8 @@ int main() {
     MenuScreen menu(window);
 
     // --- MAP ---
-    Map map;
-    map.Load("Assets/Images/Map/Map.ldtk", "Level_0");
+    //Map map;
+    //map.Load("Assets/Images/Map/Map.ldtk", "Level_0");
 
     // --- PLAYER ---
     sf::Texture texIdle, texWalk, texAttack1, texAttack2, texAttack3;
@@ -115,7 +115,7 @@ int main() {
             //     player.TakeDamage(15);
 
             // --- Vẽ ---
-			map.Draw(window);
+			//map.Draw(window);
             player.Draw(window);
             enemyManager.DrawAll(window);
         }
