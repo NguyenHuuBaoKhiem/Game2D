@@ -1,6 +1,7 @@
 ﻿#include <SFML/Graphics.hpp>
 #include "Player.h"
 #include "Enemy1.h"
+#include "Enemy2.h"
 #include "EnemyManager.h"
 #include "MenuScreen.h"
 
@@ -10,6 +11,10 @@ int main() {
 
     // --- MENU ---
     MenuScreen menu(window);
+
+    // --- MAP ---
+    Map map;
+    map.Load("Assets/Images/Map/Map.ldtk", "Level_0");
 
     // --- PLAYER ---
     sf::Texture texIdle, texWalk, texAttack1, texAttack2, texAttack3;
@@ -36,25 +41,25 @@ int main() {
         !tWalk.loadFromFile("Assets/Images/Enemy/walk.png") ||
         !tAttack.loadFromFile("Assets/Images/Enemy/attack.png") ||
         !tAttack1.loadFromFile("Assets/Images/Enemy/at1.png") ||
-		!tAttack2.loadFromFile("Assets/Images/Enemy/at2.png") ||
+        !tAttack2.loadFromFile("Assets/Images/Enemy/at2.png") ||
         !tDeath.loadFromFile("Assets/Images/Enemy/death.png")) {
         return 1;
     }
 
-    //sf::Texture tIdlee, tWalkk, tAttackk, tDeathh;
-    //if (!tIdlee.loadFromFile("Assets/Images/Enemy/idle_1.png") ||
-    //    !tWalkk.loadFromFile("Assets/Images/Enemy/walk_1.png") ||
-    //    !tAttackk.loadFromFile("Assets/Images/Enemy/attack_1.png") ||
-    //    !tDeathh.loadFromFile("Assets/Images/Enemy/death_1.png")) {
-    //    return 1;
-    //}
+    sf::Texture tIdlee, tWalkk, tAttackk, tDeathh;
+    if (!tIdlee.loadFromFile("Assets/Images/Enemy/idle_1.png") ||
+        !tWalkk.loadFromFile("Assets/Images/Enemy/walk_1.png") ||
+        !tAttackk.loadFromFile("Assets/Images/Enemy/attack_1.png") ||
+        !tDeathh.loadFromFile("Assets/Images/Enemy/death_1.png")) {
+        return 1;
+    }
 
     auto boss = std::make_unique<Enemy1>(tIdle, tWalk, tAttack, tAttack1, tAttack2, tDeath);
     boss->SetPosition({ 1000.f, 500.f });
     enemyManager.AddEnemy(std::move(boss));
-    //auto boss2 = std::make_unique<Enemy2>(tIdlee, tWalkk, tAttackk, tDeathh);
-    //boss2->SetPosition({ 1000.f, 700.f });
-    //enemyManager.AddEnemy(std::move(boss2));
+    auto boss2 = std::make_unique<Enemy2>(tIdlee, tWalkk, tAttackk, tDeathh);
+    boss2->SetPosition({ 1000.f, 500.f });
+    enemyManager.AddEnemy(std::move(boss2));
 
     sf::Clock clock;
 
@@ -110,6 +115,7 @@ int main() {
             //     player.TakeDamage(15);
 
             // --- Vẽ ---
+			map.Draw(window);
             player.Draw(window);
             enemyManager.DrawAll(window);
         }
