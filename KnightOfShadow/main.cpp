@@ -1,8 +1,8 @@
 ﻿#include <SFML/Graphics.hpp>
 #include "Player.h"
-#include "Enemy.h"
+#include "Enemy1.h"
+#include "EnemyManager.h"
 #include "MenuScreen.h"
-#include <iostream>
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(1600, 896), "Game", sf::Style::Close);
@@ -28,22 +28,35 @@ int main() {
     Player player(texIdle, texWalk, texAttack1, texAttack2, texAttack3);
     player.SetPosition(sf::Vector2f(200.f, 500.f));
 
-    // --- BOSS (Enemy) ---
-    sf::Texture tIdle, tWalk, tAttack, tHit, tDeath;
-    if (!tIdle.loadFromFile("Assets/images/Enemy/idle.png") ||
-        !tWalk.loadFromFile("Assets/images/Enemy/walk.png") ||
-        !tAttack.loadFromFile("Assets/images/Enemy/attack.png") ||
-        !tHit.loadFromFile("Assets/images/Enemy/takehit.png") ||
-        !tDeath.loadFromFile("Assets/images/Enemy/death.png")) {
-        std::cerr << "❌ KHONG LOAD DUOC ANH! Kiem tra file PNG trong thu muc.\n";
+    EnemyManager enemyManager;
+
+    // --- BOSS ---
+    sf::Texture tIdle, tWalk, tAttack, tDeath, tAttack1, tAttack2;
+    if (!tIdle.loadFromFile("Assets/Images/Enemy/idle.png") ||
+        !tWalk.loadFromFile("Assets/Images/Enemy/walk.png") ||
+        !tAttack.loadFromFile("Assets/Images/Enemy/attack.png") ||
+        !tAttack1.loadFromFile("Assets/Images/Enemy/at1.png") ||
+		!tAttack2.loadFromFile("Assets/Images/Enemy/at2.png") ||
+        !tDeath.loadFromFile("Assets/Images/Enemy/death.png")) {
         return 1;
     }
 
-    Enemy boss(tIdle, tWalk, tAttack, tHit, tDeath);
-    boss.SetPosition(sf::Vector2f(1000.f, 500.f));
+    //sf::Texture tIdlee, tWalkk, tAttackk, tDeathh;
+    //if (!tIdlee.loadFromFile("Assets/Images/Enemy/idle_1.png") ||
+    //    !tWalkk.loadFromFile("Assets/Images/Enemy/walk_1.png") ||
+    //    !tAttackk.loadFromFile("Assets/Images/Enemy/attack_1.png") ||
+    //    !tDeathh.loadFromFile("Assets/Images/Enemy/death_1.png")) {
+    //    return 1;
+    //}
+
+    auto boss = std::make_unique<Enemy1>(tIdle, tWalk, tAttack, tAttack1, tAttack2, tDeath);
+    boss->SetPosition({ 1000.f, 500.f });
+    enemyManager.AddEnemy(std::move(boss));
+    //auto boss2 = std::make_unique<Enemy2>(tIdlee, tWalkk, tAttackk, tDeathh);
+    //boss2->SetPosition({ 1000.f, 700.f });
+    //enemyManager.AddEnemy(std::move(boss2));
 
     sf::Clock clock;
-    bool bossAttackLogged = false;
 
     // --- MAIN LOOP ---
     while (window.isOpen()) {
@@ -59,7 +72,7 @@ int main() {
 
         float deltaTime = clock.restart().asSeconds();
 
-        window.clear(sf::Color(220, 220, 255)); // nền sáng nhẹ
+        window.clear(sf::Color(70, 100, 150)); // nền sáng nhẹ
 
         // --- MENU ---
         if (menu.isActive) {
@@ -68,28 +81,37 @@ int main() {
         }
         else {
             // --- GAME CHÍNH ---
+
+            // Cập nhật Player
             player.HandleInput(deltaTime);
             player.Update(deltaTime);
 
-            // Lấy vị trí player để boss biết mà di chuyển/tấn công
+            // Lấy vị trí player để boss biết
             sf::Vector2f playerPos = player.GetPosition();
 
-            boss.HandleInput(deltaTime, playerPos);
-            boss.Update(deltaTime);
-
-            // --- Kiểm tra va chạm boss vs player ---
-            if (boss.GetAttackBox().intersects(player.GetGlobalBounds())) {
-                if (!bossAttackLogged) {
-                    bossAttackLogged = true;
+            // Cập nhật Boss
+            enemyManager.UpdateAll(deltaTime, playerPos);
+            enemyManager.RemoveDeadEnemies();
+            // --- Va chạm: Player tấn công Boss ---
+            for (const auto& e : enemyManager.GetEnemies()) {
+                if ((player.GetState() == PlayerState::Attacking1 ||
+                    player.GetState() == PlayerState::Attacking2 ||
+                    player.GetState() == PlayerState::Attacking3) &&
+                    player.GetAttackBox().intersects(e->GetBodyHitbox()))
+                {
+                    e->TakeDamage(20);
                 }
             }
-            else {
-                bossAttackLogged = false;
-            }
+
+            // --- Va chạm: Boss tấn công Player ---
+            // (Nếu bạn muốn boss gây damage)
+            // Giả sử Enemy1 có GetAttackBox() thì:
+            // if (boss.IsAttacking() && boss.GetAttackBox().intersects(player.GetBodyHitbox()))
+            //     player.TakeDamage(15);
 
             // --- Vẽ ---
             player.Draw(window);
-            boss.Draw(window);
+            enemyManager.DrawAll(window);
         }
 
         window.display();

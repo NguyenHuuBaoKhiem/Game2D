@@ -33,7 +33,7 @@ void BossAnimation::Update(float deltaTime)
             if (isLooping)
                 currentFrame = 0;
             else {
-                currentFrame = frames.size() - 1;
+                currentFrame = static_cast<int>(frames.size()) - 1;
                 isFinished = true;
             }
         }

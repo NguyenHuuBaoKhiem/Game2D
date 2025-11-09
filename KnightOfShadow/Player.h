@@ -52,7 +52,7 @@ private:
 
     bool isOnGround = true;
     float gravity = 900.f;      // lực hấp dẫn
-    float jumpStrength = -450.f; // lực nhảy (âm vì hướng lên trên)
+    float jumpStrength = -500.f; // lực nhảy (âm vì hướng lên trên)
     float groundY = 500.f; // y = vị trí mặt đất
 
     // Dash variables
@@ -60,7 +60,7 @@ private:
     float dashTime = 0.f;
     float dashDuration = 0.18f;   // thời gian dash (giây)
     float dashSpeed = 500.f;      // tốc độ dash
-    float dashCooldown = 0.5f;    // thời gian hồi dash
+    float dashCooldown = 1.f;    // thời gian hồi dash
     float dashCooldownTimer = 0.f;
 
     sf::FloatRect currentAttackBox; //Hitbox đánh
@@ -87,4 +87,5 @@ public:
 
     sf::FloatRect GetAttackBox() const { return currentAttackBox; }
     sf::FloatRect GetGlobalBounds() const { return sprite.getGlobalBounds(); }
+    PlayerState GetState() const { return state; }
 };

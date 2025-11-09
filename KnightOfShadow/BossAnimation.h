@@ -4,13 +4,13 @@
 
 class BossAnimation {
 private:
-    sf::Texture* texture; // Texture của sprite sheet
-    std::vector<sf::IntRect> frames; // Danh sách các frame
-    float frameTime; // Thời gian mỗi frame (giây)
-    float currentTime; // Thời gian đã trôi qua
-    int currentFrame; // Frame hiện tại
-    bool isLooping; // Animation có lặp lại không
-    bool isFinished; // Animation đã kết thúc (dùng cho animation không lặp)
+    sf::Texture* texture;
+    std::vector<sf::IntRect> frames; 
+    float frameTime;
+    float currentTime;
+    int currentFrame;
+    bool isLooping;
+    bool isFinished;
 
 public:
     // Constructor
