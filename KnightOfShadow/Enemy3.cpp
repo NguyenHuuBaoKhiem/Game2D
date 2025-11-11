@@ -1,32 +1,31 @@
-﻿#include "Enemy1.h"
+﻿#include "Enemy3.h"
 #include <cmath>
 #include <iostream>
 
-Enemy1::Enemy1(sf::Texture& texIdle, sf::Texture& texWalk, sf::Texture& texAttack,
-    sf::Texture& texAttack1, sf::Texture& texAttack2,
-    sf::Texture& texDeath)
-    :idleAnim(texIdle, { 6, 1 }, 0.2f),
-    walkAnim(texWalk, { 12, 1 }, 0.1f),
-    attackAnim(texAttack, { 15, 1 }, 0.08f, false),
-    attack1Anim(texAttack1, { 9, 2 }, 0.08f, false),
-    attack2Anim(texAttack2, { 10, 2 }, 0.1f, false),
-    deathAnim(texDeath, { 10, 2 }, 0.15f, false)
+Enemy3::Enemy3(sf::Texture& texIdle, sf::Texture& texWalk, sf::Texture& texAttack,
+    sf::Texture& texAttack1, sf::Texture& texAttack2, sf::Texture& texDeath)
+    : idleAnim(texIdle, { 9, 1 }, 0.15f),
+    walkAnim(texWalk, { 8, 1 }, 0.1f),
+    attackAnim(texAttack, { 10, 4 }, 0.1f, false),
+    attack1Anim(texAttack1, { 10, 2 }, 0.1f, false),
+    attack2Anim(texAttack2, { 7, 7 }, 0.1f, false),
+    deathAnim(texDeath, { 7, 6 }, 0.15f, false)
 {
     state = EnemyState::Idle;
-    attackType = BossAttackType::None;
+    attackType = Boss3AttackType::None;
 
     sprite.setTexture(texIdle);
     sprite.setTextureRect(idleAnim.GetRect());
     auto rect = idleAnim.GetRect();
     sprite.setPosition(800, 400);
     sprite.setOrigin(rect.width / 2.f, rect.height / 2.f);
-    sprite.setScale(1.f, 1.f);
+    sprite.setScale(0.7f, 0.7f);
 
     currentAttackBox = sf::FloatRect();
     bodyHitbox = sf::FloatRect();
 }
 
-void Enemy1::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
+void Enemy3::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
 {
     velocity.x = 0.f;
 
@@ -39,7 +38,7 @@ void Enemy1::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
 
     sf::Vector2f direction = playerPosition - sprite.getPosition();
     float distance = std::hypot(direction.x, direction.y);
-    facingRight = direction.x < 0;
+    facingRight = direction.x > 0;
 
     if (distance <= attackRange)
     {
@@ -54,13 +53,13 @@ void Enemy1::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
             switch (randomAttack)
             {
             case 2:
-                attackType = BossAttackType::Attack;
+                attackType = Boss3AttackType::Attack;
                 break;
             case 1:
-                attackType = BossAttackType::Attack1;
+                attackType = Boss3AttackType::Attack1;
                 break;
             case 0:
-                attackType = BossAttackType::Attack2;
+                attackType = Boss3AttackType::Attack2;
                 break;
             }
 
@@ -83,13 +82,13 @@ void Enemy1::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
         ChangeState(EnemyState::Idle);
     }
 
-    sprite.setScale(facingRight ? 1.f : -1.f, 1.f);
+    sprite.setScale(facingRight ? 0.7f : -0.7f, 0.7f);
 
     if (attackCooldownTimer > 0)
         attackCooldownTimer -= deltaTime;
 }
 
-void Enemy1::Update(float deltaTime)
+void Enemy3::Update(float deltaTime)
 {
     UpdateHitCooldown(deltaTime);
 
@@ -147,6 +146,7 @@ void Enemy1::Update(float deltaTime)
     if (currentTexture && sprite.getTexture() != currentTexture)
         sprite.setTexture(*currentTexture);
     sprite.setTextureRect(currentRect);
+    sprite.setScale(facingRight ? 0.7f : -0.7f, 0.7f);
 
     // Hitbox tấn công
     if (state == EnemyState::Attacking && hitboxActive)
@@ -157,21 +157,21 @@ void Enemy1::Update(float deltaTime)
 
         switch (attackType)
         {
-        case BossAttackType::Attack:
+        case Boss3AttackType::Attack:
             attackBox.width = 250.f;
             attackBox.height = 250.f;
             attackBox.top = enemyY - 100.f;
             attackBox.left = facingRight ? enemyX - 220.f : enemyX + 20.f;
             break;
 
-        case BossAttackType::Attack1:
+        case Boss3AttackType::Attack1:
             attackBox.width = 500.f;
             attackBox.height = 50.f;
             attackBox.top = enemyY + 130.f;
             attackBox.left = enemyX - attackBox.width / 2.f;
             break;
 
-        case BossAttackType::Attack2:
+        case Boss3AttackType::Attack2:
             attackBox.width = 300.f;
             attackBox.height = 400.f;
             attackBox.top = enemyY - 200.f;
@@ -197,23 +197,23 @@ void Enemy1::Update(float deltaTime)
     bodyHitbox.top = pos.y + (bodyOffset.y + 50.f);
 }
 
-void Enemy1::UpdateAttackAnim(float deltaTime, const sf::Texture*& tex, sf::IntRect& rect)
+void Enemy3::UpdateAttackAnim(float deltaTime, const sf::Texture*& tex, sf::IntRect& rect)
 {
     attackTimer += deltaTime;
 
     switch (attackType)
     {
-    case BossAttackType::Attack:
+    case Boss3AttackType::Attack:
         attackAnim.Update(deltaTime);
         tex = attackAnim.GetTexture();
         rect = attackAnim.GetRect();
         break;
-    case BossAttackType::Attack1:
+    case Boss3AttackType::Attack1:
         attack1Anim.Update(deltaTime);
         tex = attack1Anim.GetTexture();
         rect = attack1Anim.GetRect();
         break;
-    case BossAttackType::Attack2:
+    case Boss3AttackType::Attack2:
         attack2Anim.Update(deltaTime);
         tex = attack2Anim.GetTexture();
         rect = attack2Anim.GetRect();
@@ -224,19 +224,25 @@ void Enemy1::UpdateAttackAnim(float deltaTime, const sf::Texture*& tex, sf::IntR
         break;
     }
 
+    if (attackType == Boss3AttackType::Attack)
+    {
+        float moveSpeedWhileAttacking = 250.f; // tốc độ di chuyển khi đánh
+        sprite.move((facingRight ? 0.7f : -0.7f) * moveSpeedWhileAttacking * deltaTime, 0.f);
+    }
+
     switch (attackType)
     {
-    case BossAttackType::Attack:
+    case Boss3AttackType::Attack:
         hitboxActive = (attackTimer >= attackActiveTime_Attack &&
             attackTimer <= attackActiveTime_Attack + attackDuration_Attack);
         break;
 
-    case BossAttackType::Attack1:
+    case Boss3AttackType::Attack1:
         hitboxActive = (attackTimer >= attackActiveTime_Attack1 &&
             attackTimer <= attackActiveTime_Attack1 + attackDuration_Attack1);
         break;
 
-    case BossAttackType::Attack2:
+    case Boss3AttackType::Attack2:
         hitboxActive = (attackTimer >= attackActiveTime_Attack2 &&
             attackTimer <= attackActiveTime_Attack2 + attackDuration_Attack2);
         break;
@@ -247,21 +253,21 @@ void Enemy1::UpdateAttackAnim(float deltaTime, const sf::Texture*& tex, sf::IntR
     }
 
     bool finished = false;
-    if (attackType == BossAttackType::Attack) finished = attackAnim.IsFinished();
-    if (attackType == BossAttackType::Attack1) finished = attack1Anim.IsFinished();
-    if (attackType == BossAttackType::Attack2) finished = attack2Anim.IsFinished();
+    if (attackType == Boss3AttackType::Attack) finished = attackAnim.IsFinished();
+    if (attackType == Boss3AttackType::Attack1) finished = attack1Anim.IsFinished();
+    if (attackType == Boss3AttackType::Attack2) finished = attack2Anim.IsFinished();
 
     if (finished)
     {
         ChangeState(EnemyState::Idle);
-        attackType = BossAttackType::None;
+        attackType = Boss3AttackType::None;
         attackTimer = 0.f;
         hitboxActive = false;
     }
 }
 
 
-void Enemy1::Draw(sf::RenderWindow& window)
+void Enemy3::Draw(sf::RenderWindow& window)
 {
     window.draw(sprite);
 
@@ -286,7 +292,7 @@ void Enemy1::Draw(sf::RenderWindow& window)
     window.draw(bodyBox);
 }
 
-void Enemy1::ChangeState(EnemyState newState)
+void Enemy3::ChangeState(EnemyState newState)
 {
     if (state == newState || state == EnemyState::Death)
         return;
@@ -298,15 +304,15 @@ void Enemy1::ChangeState(EnemyState newState)
     case EnemyState::Idle: idleAnim.Reset(); break;
     case EnemyState::Walking: walkAnim.Reset(); break;
     case EnemyState::Attacking:
-        if (attackType == BossAttackType::Attack) attackAnim.Reset();
-        else if (attackType == BossAttackType::Attack1) attack1Anim.Reset();
-        else if (attackType == BossAttackType::Attack2) attack2Anim.Reset();
+        if (attackType == Boss3AttackType::Attack) attackAnim.Reset();
+        else if (attackType == Boss3AttackType::Attack1) attack1Anim.Reset();
+        else if (attackType == Boss3AttackType::Attack2) attack2Anim.Reset();
         break;
     case EnemyState::Death: deathAnim.Reset(); break;
     }
 }
 
-void Enemy1::TakeDamage(int damage)
+void Enemy3::TakeDamage(int damage)
 {
     BaseEnemy::TakeDamage(damage);
 }

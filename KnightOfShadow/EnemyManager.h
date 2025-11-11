@@ -4,6 +4,8 @@
 #include <algorithm>
 #include "BaseEnemy.h"
 #include "Enemy1.h"
+#include "Enemy2.h"
+#include "Enemy3.h"
 
 class EnemyManager {
 private:

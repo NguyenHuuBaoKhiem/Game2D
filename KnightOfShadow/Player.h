@@ -3,6 +3,7 @@
 #include <SFML/Audio.hpp>
 #include "Animation.h"
 #include <vector>
+#include <iostream>
 
 struct DashTrail {
     sf::Sprite sprite;
@@ -18,7 +19,8 @@ enum PlayerState {
     Walking,
     Attacking1,
     Attacking2,
-    Attacking3
+    Attacking3,
+    Skill1
 };
 
 class Player {
@@ -33,6 +35,9 @@ private:
     sf::SoundBuffer at2_buffer;
     sf::SoundBuffer at3_buffer;
     sf::Sound attackSound;
+
+    sf::SoundBuffer skill_buffer;
+    sf::Sound skillSound;
 
     sf::Sprite sprite;
     sf::Vector2f velocity;
@@ -49,6 +54,7 @@ private:
     Animation attackAnim1;
     Animation attackAnim2;
     Animation attackAnim3;
+    Animation skill1Anim;
 
     bool isOnGround = true;
     float gravity = 900.f;      // lực hấp dẫn
@@ -63,15 +69,25 @@ private:
     float dashCooldown = 1.f;    // thời gian hồi dash
     float dashCooldownTimer = 0.f;
 
+    bool hasDashedInSkill1 = false;
+
     sf::FloatRect currentAttackBox; //Hitbox đánh
+    sf::FloatRect skill1Hitbox;
 
     sf::FloatRect bodyHitbox;   //Hitbox bị đánh
     sf::Vector2f bodyOffset;
 
+    float health = 500.f;
+    bool recentlyHit = false;
+    float hitCooldown = 0.5f;
+    float hitTimer = 0.f;
+    bool isDead = false;
+
 public:
     // Constructor đồng bộ với Player.cpp
     Player(sf::Texture& texIdle, sf::Texture& texWalk,
-        sf::Texture& texAttack1, sf::Texture& texAttack2, sf::Texture& texAttack3);
+        sf::Texture& texAttack1, sf::Texture& texAttack2, sf::Texture& texAttack3,
+        sf::Texture& texSkill1);
 
     void HandleInput(float deltaTime);
     void Update(float deltaTime);
@@ -86,6 +102,33 @@ public:
     void SetPosition(const sf::Vector2f& pos);
 
     sf::FloatRect GetAttackBox() const { return currentAttackBox; }
+    sf::FloatRect GetSkill1Hitbox() const { return skill1Hitbox; }
     sf::FloatRect GetGlobalBounds() const { return sprite.getGlobalBounds(); }
     PlayerState GetState() const { return state; }
+
+    void TakeDamage(int dmg) {
+        if (isDead || recentlyHit) return;
+        health -= dmg;
+        recentlyHit = true;
+        std::cout << "Player HP: " << health << "\n";
+        if (health <= 0) {
+            health = 0;
+            isDead = true;
+            std::cout << "Player đã chết!\n";
+        }
+    }
+
+    void UpdateHitCooldown(float dt) {
+        if (recentlyHit) {
+            hitTimer += dt;
+            if (hitTimer >= hitCooldown) {
+                recentlyHit = false;
+                hitTimer = 0.f;
+            }
+        }
+    }
+    sf::FloatRect GetBodyHitbox() const { return bodyHitbox; }
+    bool IsDead() const { return isDead; }
+    float GetHealth() const { return health; }
+
 };

@@ -74,6 +74,7 @@ public:
     void SetPosition(const sf::Vector2f& pos) { sprite.setPosition(pos); }
     sf::Sprite& GetSprite() { return sprite; }
 
+    bool IsAttacking() const { return state == EnemyState::Attacking; }
     sf::FloatRect GetAttackBox() const { return currentAttackBox; }
     sf::FloatRect GetBodyHitbox() const { return bodyHitbox; }
 };

@@ -8,12 +8,14 @@ float trailSpawnTimer = 0.f;
 float trailSpawnInterval = 0.025f;
 
 Player::Player(sf::Texture& texIdle, sf::Texture& texWalk,
-    sf::Texture& texAttack1, sf::Texture& texAttack2, sf::Texture& texAttack3)
+    sf::Texture& texAttack1, sf::Texture& texAttack2, sf::Texture& texAttack3,
+    sf::Texture& texSkill1)
     : idleAnim(texIdle, { 7, 1 }, 0.2f),
     walkAnim(texWalk, { 7, 1 }, 0.15f),
     attackAnim1(texAttack1, { 4, 1 }, 0.12f),
     attackAnim2(texAttack2, { 4, 1 }, 0.15f),
-    attackAnim3(texAttack3, { 4, 1 }, 0.12f)
+    attackAnim3(texAttack3, { 4, 1 }, 0.12f),
+    skill1Anim(texSkill1, { 8, 1 }, 0.1f)
 {
     // Load âm thanh 
     dashBuffer.loadFromFile("Assets/Sound effect/Player/dash.ogg");
@@ -28,6 +30,7 @@ Player::Player(sf::Texture& texIdle, sf::Texture& texWalk,
     at1_buffer.loadFromFile("Assets/Sound effect/Player/attack.ogg");
     at2_buffer.loadFromFile("Assets/Sound effect/Player/attack.ogg");
     at3_buffer.loadFromFile("Assets/Sound effect/Player/attack.ogg");
+    skill_buffer.loadFromFile("Assets/Sound effect/Player/Skill.ogg");
 
     // Bắt đầu với Idle
     state = Idle;
@@ -62,8 +65,14 @@ void Player::HandleInput(float deltaTime)
         dashCooldownTimer = dashCooldown;
         dashSound.play();
     }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)
+        && state != Skill1
+        && state != Attacking1 && state != Attacking2 && state != Attacking3)
+    {
+        ChangeState(Skill1);
+    }
     // Chỉ cho di chuyển khi không tấn công
-    if (state != Attacking1 && state != Attacking2 && state != Attacking3)
+    if (state != Attacking1 && state != Attacking2 && state != Attacking3 && state != Skill1)
     {
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
             velocity.x = -moveSpeed;
@@ -139,7 +148,9 @@ void Player::Update(float deltaTime)
     if (!isOnGround) {
         velocity.y += gravity * deltaTime;
     }
-    sprite.move(velocity * deltaTime);
+    if (state != Skill1) {
+        sprite.move(velocity * deltaTime);
+    }
 
     // Kiểm tra chạm đất
     if (sprite.getPosition().y >= groundY) {
@@ -203,13 +214,41 @@ void Player::Update(float deltaTime)
             ChangeState(Idle);
         }
         break;
+
+    case Skill1:
+    {
+        skill1Anim.Update(deltaTime, false);
+        currentTexture = skill1Anim.getTexture();
+        currentRect = skill1Anim.GetRect();
+
+        // Lấy frame hiện tại
+        int currentFrame = skill1Anim.GetCurrentFrame();
+
+        // Khi đến frame 2 -> bắt đầu dash (1 lần)
+        if (currentFrame == 7 && !hasDashedInSkill1)
+        {
+            float dashDistance = 120.f; // tùy chỉnh độ xa
+            sprite.move((facingRight ? 1.f : -1.f) * dashDistance, 0.f);
+            hasDashedInSkill1 = true;
+        }
+
+        // Khi animation kết thúc -> trở về Idle
+        if (skill1Anim.IsFinished())
+        {
+            ChangeState(Idle);
+            hasDashedInSkill1 = false;
+        }
+
+        break;
+    }
+
     }
     if (currentTexture && sprite.getTexture() != currentTexture)
         sprite.setTexture(*currentTexture);
 
     sprite.setTextureRect(currentRect);
 
-    if (state == Attacking1 || state == Attacking2 || state == Attacking3)
+    if (state == Attacking1 || state == Attacking2 || state == Attacking3 || state == Skill1)
     {
         sf::FloatRect attackBox;
 
@@ -236,6 +275,30 @@ void Player::Update(float deltaTime)
     {
         currentAttackBox = sf::FloatRect();
     }
+    //==================SKILL 1====================
+    if (state == Skill1)
+    {
+        // Cập nhật hitbox riêng của Skill1
+        sf::FloatRect sBox;
+        sBox.width = 200.f;   // tầm đánh Skill1
+        sBox.height = 60.f;
+
+        float playerX = sprite.getPosition().x;
+        float playerY = sprite.getPosition().y;
+        sBox.top = playerY - sBox.height / 2.f;
+
+        float offsetX = 0.f; // đánh xa hơn thường
+        if (facingRight)
+            sBox.left = playerX + offsetX;
+        else
+            sBox.left = playerX - (sBox.width + offsetX);
+
+        skill1Hitbox = sBox;
+    }
+    else
+    {
+        skill1Hitbox = sf::FloatRect();
+    }
 
     bodyHitbox.width = 40.f;   // chiều ngang thân
     bodyHitbox.height = 70.f; // chiều cao thân
@@ -243,6 +306,8 @@ void Player::Update(float deltaTime)
     sf::Vector2f pos = sprite.getPosition();
     bodyHitbox.left = pos.x + bodyOffset.x;
     bodyHitbox.top = pos.y + bodyOffset.y;
+
+    UpdateHitCooldown(deltaTime);
 }
 
 void Player::Draw(sf::RenderWindow& window)
@@ -260,6 +325,17 @@ void Player::Draw(sf::RenderWindow& window)
         atkBoxShape.setOutlineColor(sf::Color::Yellow);
         atkBoxShape.setOutlineThickness(1.f);
         window.draw(atkBoxShape);
+    }
+
+    if (state == Skill1)
+    {
+        sf::RectangleShape skillBoxShape;
+        skillBoxShape.setPosition(skill1Hitbox.left, skill1Hitbox.top);
+        skillBoxShape.setSize({ skill1Hitbox.width, skill1Hitbox.height });
+        skillBoxShape.setFillColor(sf::Color(0, 255, 255, 60)); // xanh cyan
+        skillBoxShape.setOutlineColor(sf::Color::Cyan);
+        skillBoxShape.setOutlineThickness(1.f);
+        window.draw(skillBoxShape);
     }
 
     // Vẽ vùng thân người (để so sánh)
@@ -312,6 +388,17 @@ void Player::ChangeState(PlayerState newState)
         attackSound.setPitch(1.05f + (rand() % 5 - 2) / 100.f); // ±2%
         attackSound.setVolume(10.f);
         attackSound.play();
+        break;
+    case Skill1:
+        skill1Anim.Reset();
+        hasDashedInSkill1 = false;
+
+        if (skill1Anim.getTexture())
+            sprite.setTexture(*skill1Anim.getTexture());
+        sprite.setTextureRect(skill1Anim.GetRect());
+        skillSound.setBuffer(skill_buffer);
+        skillSound.setVolume(10.f);
+        skillSound.play();
         break;
     }
 }

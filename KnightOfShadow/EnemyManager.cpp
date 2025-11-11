@@ -10,6 +10,12 @@ void EnemyManager::UpdateAll(float deltaTime, const sf::Vector2f& playerPos) {
         if (auto enemy1 = dynamic_cast<Enemy1*>(e.get())) {
             enemy1->HandleInput(deltaTime, playerPos);
         }
+        else if (auto enemy2 = dynamic_cast<Enemy2*>(e.get())) {
+            enemy2->HandleInput(deltaTime, playerPos);
+        }
+        else if (auto enemy3 = dynamic_cast<Enemy3*>(e.get())) {
+            enemy3->HandleInput(deltaTime, playerPos);
+        }
         e->Update(deltaTime);
     }
 
