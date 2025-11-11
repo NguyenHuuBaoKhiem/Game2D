@@ -54,6 +54,9 @@
     <ClCompile Include="Enemy2.cpp">
       <Filter>Source Files\Source\Enemy</Filter>
     </ClCompile>
+    <ClCompile Include="Enemy3.cpp">
+      <Filter>Source Files\Source\Enemy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MenuScreen.h">
@@ -78,6 +81,9 @@
       <Filter>Header Files\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="Enemy2.h">
+      <Filter>Header Files\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy3.h">
       <Filter>Header Files\Enemy</Filter>
     </ClInclude>
   </ItemGroup>

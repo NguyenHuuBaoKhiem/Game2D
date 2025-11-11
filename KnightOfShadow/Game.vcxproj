@@ -23,6 +23,7 @@
     <ClCompile Include="BossAnimation.cpp" />
     <ClCompile Include="Enemy1.cpp" />
     <ClCompile Include="Enemy2.cpp" />
+    <ClCompile Include="Enemy3.cpp" />
     <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MenuScreen.cpp" />
@@ -34,6 +35,7 @@
     <ClInclude Include="BossAnimation.h" />
     <ClInclude Include="Enemy1.h" />
     <ClInclude Include="Enemy2.h" />
+    <ClInclude Include="Enemy3.h" />
     <ClInclude Include="EnemyManager.h" />
     <ClInclude Include="MenuScreen.h" />
     <ClInclude Include="Player.h" />
