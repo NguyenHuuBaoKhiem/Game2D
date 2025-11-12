@@ -3,12 +3,13 @@
 #include <iostream>
 
 Enemy3::Enemy3(sf::Texture& texIdle, sf::Texture& texWalk, sf::Texture& texAttack,
-    sf::Texture& texAttack1, sf::Texture& texAttack2, sf::Texture& texDeath)
+    sf::Texture& texAttack1, sf::Texture& texAttack2, sf::Texture& texTele, sf::Texture& texDeath)
     : idleAnim(texIdle, { 9, 1 }, 0.15f),
     walkAnim(texWalk, { 8, 1 }, 0.1f),
     attackAnim(texAttack, { 10, 4 }, 0.1f, false),
     attack1Anim(texAttack1, { 10, 2 }, 0.1f, false),
     attack2Anim(texAttack2, { 7, 7 }, 0.1f, false),
+    teleAnim(texTele, { 10, 1 }, 0.1f, false),
     deathAnim(texDeath, { 7, 6 }, 0.15f, false)
 {
     state = EnemyState::Idle;
@@ -29,6 +30,19 @@ void Enemy3::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
 {
     velocity.x = 0.f;
 
+    // ==== Nếu chuẩn bị Attack2 thì teleport lên đầu player ====
+    if (isTeleportForAttack2)
+    {
+        isTeleporting = true;
+        teleTarget = attack2Target;
+        isTeleportForAttack2 = false; // reset
+        teleAnim.Reset();
+        teleTimer = 0.f;
+        return; // ngừng mọi logic khác cho tới khi teleport xong
+    }
+
+
+    // Nếu đang tấn công hoặc chết thì không di chuyển
     if (state == EnemyState::Attacking || state == EnemyState::Death || isDead)
     {
         if (attackCooldownTimer > 0)
@@ -36,10 +50,27 @@ void Enemy3::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
         return;
     }
 
+    // Nếu đang teleport thì dừng hết
+    if (isTeleporting)
+        return;
+
     sf::Vector2f direction = playerPosition - sprite.getPosition();
     float distance = std::hypot(direction.x, direction.y);
     facingRight = direction.x > 0;
 
+    // Kiểm tra cooldown teleport
+    teleTimer += deltaTime;
+    if (teleTimer >= teleCooldown && !isTeleporting && state != EnemyState::Attacking)
+    {
+        isTeleporting = true;
+        teleTimer = 0.f;
+        float offsetX = (rand() % 2 == 0 ? -150.f : 150.f);
+        teleTarget = sf::Vector2f(playerPosition.x + offsetX, playerPosition.y);
+        teleAnim.Reset();
+        return;
+    }
+
+    // Kiểm tra tấn công
     if (distance <= attackRange)
     {
         attackTimer += deltaTime;
@@ -47,21 +78,19 @@ void Enemy3::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
         if (attackTimer >= attackCooldown)
         {
             attackTimer = 0.f;
-
-            // Random 1 trong 3 đòn tấn công
-            int randomAttack = rand() % 3; // 0,1,2
-            switch (randomAttack)
+            int r = rand() % 100; // số từ 0 -> 99
+            if (r < 50)            // 0-49 -> 50%
             {
-            case 2:
-                attackType = Boss3AttackType::Attack;
-                break;
-            case 1:
-                attackType = Boss3AttackType::Attack1;
-                break;
-            case 0:
                 attackType = Boss3AttackType::Attack2;
-                break;
+                isTeleportForAttack2 = true;
+                attack2Target = sf::Vector2f(playerPosition.x, playerPosition.y - 250.f);
             }
+            else if (r < 80)       // 50-79 -> 30%
+                attackType = Boss3AttackType::Attack1;
+            else                   // 80-99 -> 20%
+                attackType = Boss3AttackType::Attack;
+         
+
 
             ChangeState(EnemyState::Attacking);
             hitboxActive = false;
@@ -92,19 +121,65 @@ void Enemy3::Update(float deltaTime)
 {
     UpdateHitCooldown(deltaTime);
 
+    // ===== TELEPORT CHO ATTACK2 =====
+    if (isTeleportForAttack2)
+    {
+        teleAnim.Reset();
+        isTeleporting = true;      // dùng lại cơ chế teleport animation
+        teleTarget = attack2Target;
+        isTeleportForAttack2 = false;  // reset flag để không lặp lại
+        teleTimer = 0.f;
+        return; // ngừng các hành vi khác khi teleport
+    }
+
     if (isDead)
     {
         if (state != EnemyState::Death)
             ChangeState(EnemyState::Death);
     }
 
-    if (state == EnemyState::Death && deathAnim.IsFinished())
+    if (isTeleporting)
+    {
+        teleAnim.Update(deltaTime);
+        sprite.setTexture(*teleAnim.GetTexture());
+        sprite.setTextureRect(teleAnim.GetRect());
+        sprite.setScale(facingRight ? 0.7f : -0.7f, 0.7f);
+
+        if (teleAnim.IsFinished())
+        {
+            sprite.setPosition(teleTarget);
+            isTeleporting = false;
+
+            // Nếu teleport chuẩn bị Attack2
+            if (attackType == Boss3AttackType::Attack2)
+            {
+                ChangeState(EnemyState::Attacking);
+                attackTimer = 0.f;
+                hitboxActive = false;
+            }
+            else
+            {
+                // Thực hiện teleport bình thường (attack ngẫu nhiên)
+                attackType = (rand() % 2 == 0) ? Boss3AttackType::Attack : Boss3AttackType::Attack1;
+                ChangeState(EnemyState::Attacking);
+                attackTimer = 0.f;
+                hitboxActive = false;
+            }
+        }
         return;
+    }
+
+
 
     if (!isOnGround)
         velocity.y += gravity * deltaTime;
+    // Dừng mọi di chuyển khi chuẩn bị hoặc đang thực hiện Attack2
+    if (isTeleportForAttack2 || (attackType == Boss3AttackType::Attack2 && state == EnemyState::Attacking))
+    {
+        velocity = sf::Vector2f(0.f, 0.f); // dừng mọi di chuyển
+    }
 
-    sprite.move(velocity * deltaTime);
+    sprite.move(velocity * deltaTime);  
 
     if (sprite.getPosition().y >= groundY)
     {
@@ -123,17 +198,14 @@ void Enemy3::Update(float deltaTime)
         currentTexture = idleAnim.GetTexture();
         currentRect = idleAnim.GetRect();
         break;
-
     case EnemyState::Walking:
         walkAnim.Update(deltaTime);
         currentTexture = walkAnim.GetTexture();
         currentRect = walkAnim.GetRect();
         break;
-
     case EnemyState::Attacking:
         UpdateAttackAnim(deltaTime, currentTexture, currentRect);
         break;
-
     case EnemyState::Death:
         deathAnim.Update(deltaTime);
         currentTexture = deathAnim.GetTexture();
@@ -158,26 +230,20 @@ void Enemy3::Update(float deltaTime)
         switch (attackType)
         {
         case Boss3AttackType::Attack:
-            attackBox.width = 250.f;
-            attackBox.height = 250.f;
+            attackBox.width = 250.f; attackBox.height = 250.f;
             attackBox.top = enemyY - 100.f;
             attackBox.left = facingRight ? enemyX - 220.f : enemyX + 20.f;
             break;
-
         case Boss3AttackType::Attack1:
-            attackBox.width = 500.f;
-            attackBox.height = 50.f;
+            attackBox.width = 500.f; attackBox.height = 50.f;
             attackBox.top = enemyY + 130.f;
             attackBox.left = enemyX - attackBox.width / 2.f;
             break;
-
         case Boss3AttackType::Attack2:
-            attackBox.width = 300.f;
-            attackBox.height = 400.f;
+            attackBox.width = 300.f; attackBox.height = 400.f;
             attackBox.top = enemyY - 200.f;
             attackBox.left = facingRight ? enemyX - 300.f : enemyX + 20.f;
             break;
-
         default:
             attackBox = sf::FloatRect();
             break;
@@ -196,6 +262,7 @@ void Enemy3::Update(float deltaTime)
     bodyHitbox.left = pos.x + bodyOffset.x;
     bodyHitbox.top = pos.y + (bodyOffset.y + 50.f);
 }
+
 
 void Enemy3::UpdateAttackAnim(float deltaTime, const sf::Texture*& tex, sf::IntRect& rect)
 {
@@ -308,7 +375,10 @@ void Enemy3::ChangeState(EnemyState newState)
         else if (attackType == Boss3AttackType::Attack1) attack1Anim.Reset();
         else if (attackType == Boss3AttackType::Attack2) attack2Anim.Reset();
         break;
-    case EnemyState::Death: deathAnim.Reset(); break;
+    case EnemyState::Death: deathAnim.Reset();
+        isTeleporting = false;
+        deathAnim.Reset();
+        break;
     }
 }
 

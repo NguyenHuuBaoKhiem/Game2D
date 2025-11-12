@@ -17,6 +17,7 @@ private:
     BossAnimation attackAnim;
     BossAnimation attack1Anim;
     BossAnimation attack2Anim;
+    BossAnimation teleAnim;
     BossAnimation deathAnim;
 
     // === Tấn công ===
@@ -39,6 +40,20 @@ private:
     float attackActiveTime_Attack2 = 0.5f;
     float attackDuration_Attack2 = 1.0f;
 
+
+    // Teleport skill
+    bool isTeleporting = false;  // đang teleport tổng thể
+    bool isTeleOut = false;      // animation teleport-out
+    bool isTeleIn = false;       // animation teleport-in
+    float teleTimer = 0.f;       // timer của teleport
+    float teleCooldown = 1.f;    // cooldown skill
+    float teleDuration = 0.f;   // thời gian animation teleport nếu muốn
+    sf::Vector2f teleTarget;     // vị trí sau teleport
+
+    bool isTeleportForAttack2 = false;  // true khi boss chuẩn bị tele lên player để đánh Attack2
+    sf::Vector2f attack2Target;         // vị trí teleport lên đầu player
+
+    float groundY = 455.f;
     bool hitboxActive = false;
 
     // === Hàm nội bộ ===
@@ -52,6 +67,7 @@ public:
         sf::Texture& texAttack,
         sf::Texture& texAttack1,
         sf::Texture& texAttack2,
+        sf::Texture& texTele,
         sf::Texture& texDeath);
 
     // === Override ===
