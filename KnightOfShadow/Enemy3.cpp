@@ -59,11 +59,15 @@ void Enemy3::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
     facingRight = direction.x > 0;
 
     // Kiểm tra cooldown teleport
+    float currentCooldown = justFinishedAttack2 ? teleCooldownAfterAttack2 : teleCooldownNormal;
     teleTimer += deltaTime;
-    if (teleTimer >= teleCooldown && !isTeleporting && state != EnemyState::Attacking)
+
+    if (teleTimer >= currentCooldown && !isTeleporting && state != EnemyState::Attacking)
     {
-        isTeleporting = true;
         teleTimer = 0.f;
+        justFinishedAttack2 = false; // reset flag
+        isTeleporting = true;
+
         float offsetX = (rand() % 2 == 0 ? -150.f : 150.f);
         teleTarget = sf::Vector2f(playerPosition.x + offsetX, playerPosition.y);
         teleAnim.Reset();
@@ -79,13 +83,13 @@ void Enemy3::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
         {
             attackTimer = 0.f;
             int r = rand() % 100; // số từ 0 -> 99
-            if (r < 50)            // 0-49 -> 50%
+            if (r < 40)            // 0-49 -> 50%
             {
                 attackType = Boss3AttackType::Attack2;
                 isTeleportForAttack2 = true;
                 attack2Target = sf::Vector2f(playerPosition.x, playerPosition.y - 250.f);
             }
-            else if (r < 80)       // 50-79 -> 30%
+            else if (r < 70)       // 50-79 -> 30%
                 attackType = Boss3AttackType::Attack1;
             else                   // 80-99 -> 20%
                 attackType = Boss3AttackType::Attack;
@@ -173,11 +177,7 @@ void Enemy3::Update(float deltaTime)
 
     if (!isOnGround)
         velocity.y += gravity * deltaTime;
-    // Dừng mọi di chuyển khi chuẩn bị hoặc đang thực hiện Attack2
-    if (isTeleportForAttack2 || (attackType == Boss3AttackType::Attack2 && state == EnemyState::Attacking))
-    {
-        velocity = sf::Vector2f(0.f, 0.f); // dừng mọi di chuyển
-    }
+
 
     sprite.move(velocity * deltaTime);  
 
@@ -326,6 +326,9 @@ void Enemy3::UpdateAttackAnim(float deltaTime, const sf::Texture*& tex, sf::IntR
 
     if (finished)
     {
+        if (attackType == Boss3AttackType::Attack2)
+            justFinishedAttack2 = true;
+
         ChangeState(EnemyState::Idle);
         attackType = Boss3AttackType::None;
         attackTimer = 0.f;

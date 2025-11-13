@@ -114,7 +114,7 @@ public:
         if (health <= 0) {
             health = 0;
             isDead = true;
-            std::cout << "Player đã chết!\n";
+            std::cout << "Player da chet!\n";
         }
     }
 

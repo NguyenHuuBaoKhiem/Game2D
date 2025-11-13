@@ -25,16 +25,16 @@ private:
     // --- Hành vi ---
     float moveSpeed = 200.f;
     float detectionRange = 800.f;
-    float attackRange = 200.f;
+    float attackRange = 500.f;
 
-    float attackCooldown = 0.2f;
+    float attackCooldown = 0.5f;
     float attackCooldownTimer = 0.f;
     float attackTimer = 0.f;
 
     float attackActiveTime_Attack = 0.3f;
     float attackDuration_Attack = 0.7f;
 
-    float attackActiveTime_Attack1 = 0.8f;
+    float attackActiveTime_Attack1 = 0.8f;  
     float attackDuration_Attack1 = 0.5f;
 
     float attackActiveTime_Attack2 = 0.5f;
@@ -52,6 +52,10 @@ private:
 
     bool isTeleportForAttack2 = false;  // true khi boss chuẩn bị tele lên player để đánh Attack2
     sf::Vector2f attack2Target;         // vị trí teleport lên đầu player
+
+    bool justFinishedAttack2 = false;             // bật true ngay sau khi Attack2 kết thúc
+    float teleCooldownNormal = 6.f;             // cooldown teleport bình thường
+    float teleCooldownAfterAttack2 = 0.2f;
 
     float groundY = 455.f;
     bool hitboxActive = false;
