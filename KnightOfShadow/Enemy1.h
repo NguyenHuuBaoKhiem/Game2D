@@ -38,6 +38,8 @@ private:
     float attackDuration_Attack2 = 1.0f;
     bool hitboxActive = false;
 
+    float groundY = 550.f;
+
     // === Hàm nội bộ ===
     void UpdateAttackAnim(float deltaTime, const sf::Texture*& tex, sf::IntRect& rect);
     void ChangeState(EnemyState newState);

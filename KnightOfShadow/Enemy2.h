@@ -22,7 +22,7 @@ private:
     float attackActiveTime_Attack = 0.3f;
     float attackDuration_Attack = 0.7f;
 
-    float groundY = 465.f;
+    float groundY = 610.f;
     bool hitboxActive = false;
 
     // === HĂ m ná»™i bá»™ ===

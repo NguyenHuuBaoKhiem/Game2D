@@ -57,7 +57,7 @@ private:
     float teleCooldownNormal = 6.f;             // cooldown teleport bình thường
     float teleCooldownAfterAttack2 = 0.2f;
 
-    float groundY = 455.f;
+    float groundY = 550.f;
     bool hitboxActive = false;
 
     // === Hàm nội bộ ===

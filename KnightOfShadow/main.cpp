@@ -1,10 +1,13 @@
 ﻿#include <SFML/Graphics.hpp>
 #include "Player.h"
-//#include "Enemy1.h"
-//#include "Enemy2.h"
+#include "Enemy1.h"
+#include "Enemy2.h"
 #include "Enemy3.h"
 #include "EnemyManager.h"
 #include "MenuScreen.h"
+#include "Map.h"
+#include <vector>
+#include <string>
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(1600, 896), "Game", sf::Style::Close);
@@ -12,6 +15,12 @@ int main() {
 
     // --- MENU ---
     MenuScreen menu(window);
+
+    // --- MAP ---
+    Map map;
+    std::vector<std::string> levelNames = { "Level_0", "Level_1", "Level_2", "Level_3" };
+    int currentLevel = 0;
+    map.Load("Assets/Images/Map/Map.ldtk", levelNames[currentLevel]);
 
     // --- PLAYER ---
     sf::Texture texIdle, texWalk, texAttack1, texAttack2, texAttack3, texSkill1;
@@ -30,34 +39,34 @@ int main() {
     texSkill1.setSmooth(true);
 
     Player player(texIdle, texWalk, texAttack1, texAttack2, texAttack3, texSkill1);
-    player.SetPosition(sf::Vector2f(200.f, 500.f));
+    player.SetPosition(sf::Vector2f(200.f, 655.f));
 
     // --- ENEMY MANAGER ---
     EnemyManager enemyManager;
 
     //// --- BOSS 1 ---
-    //sf::Texture tIdle, tWalk, tAttack, tDeath, tAttack1, tAttack2;
-    //tIdle.loadFromFile("Assets/Images/Enemy/idle.png");
-    //tWalk.loadFromFile("Assets/Images/Enemy/walk.png");
-    //tAttack.loadFromFile("Assets/Images/Enemy/attack.png");
-    //tAttack1.loadFromFile("Assets/Images/Enemy/at1.png");
-    //tAttack2.loadFromFile("Assets/Images/Enemy/at2.png");
-    //tDeath.loadFromFile("Assets/Images/Enemy/death.png");
+    sf::Texture tIdle, tWalk, tAttack, tDeath, tAttack1, tAttack2;
+    tIdle.loadFromFile("Assets/Images/Enemy/idle.png");
+    tWalk.loadFromFile("Assets/Images/Enemy/walk.png");
+    tAttack.loadFromFile("Assets/Images/Enemy/attack.png");
+    tAttack1.loadFromFile("Assets/Images/Enemy/at1.png");
+    tAttack2.loadFromFile("Assets/Images/Enemy/at2.png");
+    tDeath.loadFromFile("Assets/Images/Enemy/death.png");
 
-    //auto boss1 = std::make_unique<Enemy1>(tIdle, tWalk, tAttack, tAttack1, tAttack2, tDeath);
-    //boss1->SetPosition({ 700.f, 500.f });
-    //enemyManager.AddEnemy(std::move(boss1));
+    /*auto boss1 = std::make_unique<Enemy1>(tIdle, tWalk, tAttack, tAttack1, tAttack2, tDeath);
+    boss1->SetPosition({ 700.f, 500.f });
+    enemyManager.AddEnemy(std::move(boss1));*/
 
     //// --- BOSS 2 ---
-    //sf::Texture tIdlee, tWalkk, tAttackk, tDeathh;
-    //tIdlee.loadFromFile("Assets/Images/Enemy/idle_1.png");
-    //tWalkk.loadFromFile("Assets/Images/Enemy/walk_1.png");
-    //tAttackk.loadFromFile("Assets/Images/Enemy/attack_1.png");
-    //tDeathh.loadFromFile("Assets/Images/Enemy/death_1.png");
+    sf::Texture tIdlee, tWalkk, tAttackk, tDeathh;
+    tIdlee.loadFromFile("Assets/Images/Enemy/idle_1.png");
+    tWalkk.loadFromFile("Assets/Images/Enemy/walk_1.png");
+    tAttackk.loadFromFile("Assets/Images/Enemy/attack_1.png");
+    tDeathh.loadFromFile("Assets/Images/Enemy/death_1.png");
 
-    //auto boss2 = std::make_unique<Enemy2>(tIdlee, tWalkk, tAttackk, tDeathh);
-    //boss2->SetPosition({ 1000.f, 500.f });
-    //enemyManager.AddEnemy(std::move(boss2));
+    /*auto boss2 = std::make_unique<Enemy2>(tIdlee, tWalkk, tAttackk, tDeathh);
+    boss2->SetPosition({ 1000.f, 500.f });
+    enemyManager.AddEnemy(std::move(boss2));*/
 
     // --- BOSS 3 (có teleport) ---
     sf::Texture tIdle3, tWalk3, tAttack3, tAttack13, tAttack23, tTele3, tDeath3;
@@ -68,9 +77,10 @@ int main() {
     tAttack23.loadFromFile("Assets/Images/Enemy/at2_2.png");
     tTele3.loadFromFile("Assets/Images/Enemy/tele.png");
     tDeath3.loadFromFile("Assets/Images/Enemy/death_2.png");
-    auto boss3 = std::make_unique<Enemy3>(tIdle3, tWalk3, tAttack3, tAttack13, tAttack23, tTele3, tDeath3);
+
+    /*auto boss3 = std::make_unique<Enemy3>(tIdle3, tWalk3, tAttack3, tAttack13, tAttack23, tTele3, tDeath3);
     boss3->SetPosition({ 1300.f, 700.f });
-    enemyManager.AddEnemy(std::move(boss3));
+    enemyManager.AddEnemy(std::move(boss3));*/
 
     sf::Clock clock;
 
@@ -101,6 +111,12 @@ int main() {
             // Cập nhật Player
             player.HandleInput(deltaTime);
             player.Update(deltaTime);
+
+            // Giới hạn biên map
+            sf::Vector2f pos = player.GetPosition();
+            if (pos.x < 50.f) pos.x = 50.f;
+            if (pos.x > 1550.f) pos.x = 1550.f;
+            player.SetPosition(pos);
 
             // Lấy vị trí player để boss biết
             sf::Vector2f playerPos = player.GetPosition();
@@ -133,7 +149,63 @@ int main() {
                 }
             }
 
+            // --- Kiểm tra boss chết ---
+            bool allDead = true;
+            for (const auto& e : enemyManager.GetEnemies()) {
+                if (!e->IsDead())
+                    allDead = false;
+            }
+
+            // --- Sang map khác khi đi đến cuối map ---
+            if (pos.x >= 1550.f) {
+                // Map 0 luôn qua được
+                // Các map sau chỉ khi boss chết mới qua
+                if (currentLevel == 0 || allDead) {
+                    currentLevel++;
+                    if (currentLevel < levelNames.size()) {
+                        // Load map mới
+                        map.Load("Assets/Images/Map/Map.ldtk", levelNames[currentLevel]);
+                        player.SetPosition({ 200.f, 650.f });
+
+                        // Reset boss cũ
+                        enemyManager = EnemyManager();
+
+                        // Spawn boss theo map
+                        if (currentLevel == 1) {
+                            // Map 1 → Enemy2
+                            auto boss = std::make_unique<Enemy2>(
+                                tIdlee, tWalkk, tAttackk, tDeathh
+                            );
+
+                            boss->SetPosition({ 1000.f, 610.f });
+                            enemyManager.AddEnemy(std::move(boss));
+                        }
+                        else if (currentLevel == 2) {
+                            // Map 2 → Enemy1
+                            auto boss = std::make_unique<Enemy1>(
+                                tIdle, tWalk, tAttack, tAttack1, tAttack2, tDeath
+                            );
+
+                            boss->SetPosition({ 1000.f, 550.f });
+                            enemyManager.AddEnemy(std::move(boss));
+                        }
+                        else if (currentLevel == 3) {
+                            // Map 3 → Enemy3
+                            auto boss = std::make_unique<Enemy3>(
+                                tIdle3, tWalk3, tAttack3, tAttack13, tAttack23, tTele3, tDeath3
+                            );
+
+                            boss->SetPosition({ 1000.f, 550.f });
+                            enemyManager.AddEnemy(std::move(boss));
+                        }
+
+
+                    }
+                }
+            }
+
             // --- Vẽ ---
+            map.Draw(window);
             player.Draw(window);
             enemyManager.DrawAll(window);
         }

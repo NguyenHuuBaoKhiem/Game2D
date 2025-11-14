@@ -59,7 +59,7 @@ private:
     bool isOnGround = true;
     float gravity = 900.f;      // lực hấp dẫn
     float jumpStrength = -500.f; // lực nhảy (âm vì hướng lên trên)
-    float groundY = 500.f; // y = vị trí mặt đất
+    float groundY = 655.f; // y = vị trí mặt đất
 
     // Dash variables
     bool isDashing = false;
