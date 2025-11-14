@@ -28,4 +28,5 @@ public:
 	void Reset();
 	bool IsFinished() const;
 	const sf::Texture* getTexture() const;
+	int GetCurrentFrame() const { return m_currentFrame.x; }
 };
