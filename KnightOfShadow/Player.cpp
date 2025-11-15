@@ -9,13 +9,15 @@ float trailSpawnInterval = 0.025f;
 
 Player::Player(sf::Texture& texIdle, sf::Texture& texWalk,
     sf::Texture& texAttack1, sf::Texture& texAttack2, sf::Texture& texAttack3,
-    sf::Texture& texSkill1)
+    sf::Texture& texSkill1, sf::Texture& texDeath)
     : idleAnim(texIdle, { 7, 1 }, 0.2f),
     walkAnim(texWalk, { 7, 1 }, 0.15f),
     attackAnim1(texAttack1, { 4, 1 }, 0.12f),
     attackAnim2(texAttack2, { 4, 1 }, 0.15f),
     attackAnim3(texAttack3, { 4, 1 }, 0.12f),
-    skill1Anim(texSkill1, { 8, 1 }, 0.1f)
+    skill1Anim(texSkill1, { 8, 1 }, 0.1f),
+    deathAnim(texDeath, { 10, 1 }, 0.2f)
+
 {
     // Load âm thanh 
     dashBuffer.loadFromFile("Assets/Sound effect/Player/dash.ogg");
@@ -41,13 +43,33 @@ Player::Player(sf::Texture& texIdle, sf::Texture& texWalk,
 
     // Đặt origin theo frame đầu tiên để nhân vật đứng vững
     auto rect = idleAnim.GetRect();
-    sprite.setPosition(800, 800);
     sprite.setOrigin(384 / 2.f, 192 / 2.f);
     sprite.setScale(1.f, 1.f);
+
+    //======================HP BAR======================
+    avatarTex.loadFromFile("Assets/Images/Player/avatar.png"); // hình đại diện player
+    avatarSprite.setTexture(avatarTex);
+    avatarSprite.setScale(0.5f, 0.5f); // tuỳ chỉnh size
+    avatarSprite.setPosition(1.f, 10.f); // góc trái màn hình
+
+    maxHealth = 500.f;
+    health = maxHealth;
+
+    // Nền
+    hpBarBack.setSize(sf::Vector2f(200.f, 20.f)); // chiều dài 200, cao 20
+    hpBarBack.setFillColor(sf::Color(50, 50, 50, 200)); // xám mờ
+    hpBarBack.setPosition(20.f, 20.f); // góc trái trên
+
+    // Thanh HP đỏ
+    hpBarFront.setSize(sf::Vector2f(200.f, 20.f));
+    hpBarFront.setFillColor(sf::Color::Red);
+    hpBarFront.setPosition(hpBarBack.getPosition());
 }
 
 void Player::HandleInput(float deltaTime)
 {
+    if (state == Death) return;
+
     velocity.x = 0.f;
     bool moving = false;
 
@@ -241,6 +263,11 @@ void Player::Update(float deltaTime)
 
         break;
     }
+    case Death:
+        deathAnim.Update(deltaTime, false);
+        sprite.setTexture(*deathAnim.getTexture());
+        sprite.setTextureRect(deathAnim.GetRect());
+        return;
 
     }
     if (currentTexture && sprite.getTexture() != currentTexture)
@@ -310,11 +337,34 @@ void Player::Update(float deltaTime)
     UpdateHitCooldown(deltaTime);
 }
 
+void Player::UpdateHPBar() {
+    float hpPercent = health / maxHealth; // tỉ lệ còn lại
+    hpBarFront.setSize(sf::Vector2f(hpBarBack.getSize().x * hpPercent, hpBarFront.getSize().y));
+}
+
 void Player::Draw(sf::RenderWindow& window)
 {
     for (const auto& t : dashTrails)
         window.draw(t.sprite);
     window.draw(sprite);
+
+    // Vẽ avatar
+    window.draw(avatarSprite);
+
+    // Vẽ thanh máu
+    sf::RectangleShape backBar;
+    backBar.setSize({ 250.f, 15.f }); // size thanh máu
+    backBar.setFillColor(sf::Color(100, 100, 100)); // nền xám
+    backBar.setPosition(avatarSprite.getPosition().x + avatarSprite.getGlobalBounds().width - 7.f,
+        avatarSprite.getPosition().y + 28.f);
+    window.draw(backBar);
+
+    sf::RectangleShape frontBar;
+    float hpRatio = health / maxHealth;
+    frontBar.setSize({ 250.f * hpRatio, 15.f }); // scale theo HP
+    frontBar.setFillColor(sf::Color::Red);
+    frontBar.setPosition(backBar.getPosition());
+    window.draw(frontBar);
 
     if (state == Attacking1 || state == Attacking2 || state == Attacking3)
     {
@@ -399,6 +449,10 @@ void Player::ChangeState(PlayerState newState)
         skillSound.setBuffer(skill_buffer);
         skillSound.setVolume(10.f);
         skillSound.play();
+        break;
+    case Death:
+        deathAnim.Reset();
+        velocity = { 0.f, 0.f }; // nhân vật đứng im
         break;
     }
 }

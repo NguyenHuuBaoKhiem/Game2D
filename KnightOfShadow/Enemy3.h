@@ -31,14 +31,14 @@ private:
     float attackCooldownTimer = 0.f;
     float attackTimer = 0.f;
 
-    float attackActiveTime_Attack = 0.3f;
-    float attackDuration_Attack = 0.7f;
+    float attackActiveTime_Attack = 0.5f;
+    float attackDuration_Attack = 3.5f;
 
-    float attackActiveTime_Attack1 = 0.8f;  
-    float attackDuration_Attack1 = 0.5f;
+    float attackActiveTime_Attack1 = 0.5f;  // hitbox hiện ra
+    float attackDuration_Attack1 = 1.f;     // thời gian hitbox tồn tại
 
-    float attackActiveTime_Attack2 = 0.5f;
-    float attackDuration_Attack2 = 1.0f;
+    float attackActiveTime_Attack2 = 0.7f;
+    float attackDuration_Attack2 = 2.0f;
 
 
     // Teleport skill
@@ -57,8 +57,11 @@ private:
     float teleCooldownNormal = 6.f;             // cooldown teleport bình thường
     float teleCooldownAfterAttack2 = 0.2f;
 
-    float groundY = 550.f;
+    float groundY = 455.f;
     bool hitboxActive = false;
+
+    sf::FloatRect safeZoneLeft;
+    sf::FloatRect safeZoneRight;
 
     // === Hàm nội bộ ===
     void UpdateAttackAnim(float deltaTime, const sf::Texture*& tex, sf::IntRect& rect);
@@ -79,4 +82,7 @@ public:
     void Update(float deltaTime) override;
     void Draw(sf::RenderWindow& window) override;
     void TakeDamage(int damage) override;
+    std::vector<sf::FloatRect> GetSafeZones() const override {
+        return { safeZoneLeft, safeZoneRight };
+    }
 };

@@ -14,7 +14,7 @@ bool Map::Load(const string& filePath, const string& levelName)
     // 1️⃣ Đọc file JSON
     ifstream file(filePath);
     if (!file.is_open()) {
-        cerr << "⚠️ Không thể mở file map: " << filePath << endl;
+        cerr << " Khong the mo file map: " << filePath << endl;
         return false;
     }
 
@@ -28,14 +28,14 @@ bool Map::Load(const string& filePath, const string& levelName)
     for (auto& level : ldtk["levels"]) {
         if (level["identifier"] == levelName) {
             targetLevel = level;
-            std::cout << "✅ Loaded level: " << (std::string)level["identifier"] << std::endl;
+            std::cout << " Loaded level: " << (std::string)level["identifier"] << std::endl;
             found = true;
             break;
         }
     }
 
     if (!found) {
-        cerr << "⚠️ Không tìm thấy level: " << levelName << endl;
+        cerr << "Khong tim thay level: " << levelName << endl;
         return false;
     }
 
@@ -54,7 +54,7 @@ bool Map::Load(const string& filePath, const string& levelName)
         tilesetPath = "Assets/Images/Map/start (2).png"; // fallback
 
     if (!tileset.loadFromFile(tilesetPath)) {
-        cerr << "⚠️ Không thể tải tileset: " << tilesetPath << endl;
+        cerr << " Khong the tai tileset: " << tilesetPath << endl;
         return false;
     }
 
@@ -103,7 +103,7 @@ bool Map::Load(const string& filePath, const string& levelName)
         }
     }
 
-    cout << "✅ Đã load map: " << levelName
+    cout << "Da load map: " << levelName
         << " | Background: " << backgroundTiles.size()
         << " | Ground: " << groundTiles.size() << endl;
 

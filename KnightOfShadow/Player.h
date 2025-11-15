@@ -20,7 +20,8 @@ enum PlayerState {
     Attacking1,
     Attacking2,
     Attacking3,
-    Skill1
+    Skill1,
+    Death
 };
 
 class Player {
@@ -55,6 +56,7 @@ private:
     Animation attackAnim2;
     Animation attackAnim3;
     Animation skill1Anim;
+    Animation deathAnim;
 
     bool isOnGround = true;
     float gravity = 900.f;      // lực hấp dẫn
@@ -77,17 +79,24 @@ private:
     sf::FloatRect bodyHitbox;   //Hitbox bị đánh
     sf::Vector2f bodyOffset;
 
-    float health = 500.f;
     bool recentlyHit = false;
     float hitCooldown = 0.5f;
     float hitTimer = 0.f;
     bool isDead = false;
 
+    sf::RectangleShape hpBarBack;   // nền đen/màu tối
+    sf::RectangleShape hpBarFront;  // thanh máu đỏ
+    float maxHealth;                // HP tối đa
+    float health;                   // HP hiện tại
+
+    sf::Texture avatarTex;
+    sf::Sprite avatarSprite;
+
 public:
     // Constructor đồng bộ với Player.cpp
     Player(sf::Texture& texIdle, sf::Texture& texWalk,
         sf::Texture& texAttack1, sf::Texture& texAttack2, sf::Texture& texAttack3,
-        sf::Texture& texSkill1);
+        sf::Texture& texSkill1, sf::Texture& texDeath);
 
     void HandleInput(float deltaTime);
     void Update(float deltaTime);
@@ -111,9 +120,14 @@ public:
         health -= dmg;
         recentlyHit = true;
         std::cout << "Player HP: " << health << "\n";
+        if (health < 0) health = 0;
+        recentlyHit = true;
+        UpdateHPBar();
         if (health <= 0) {
-            health = 0;
             isDead = true;
+            isDashing = false;
+            dashTime = 0.f;
+            ChangeState(Death);
             std::cout << "Player da chet!\n";
         }
     }
@@ -131,4 +145,5 @@ public:
     bool IsDead() const { return isDead; }
     float GetHealth() const { return health; }
 
+    void UpdateHPBar();
 };

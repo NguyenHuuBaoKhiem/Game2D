@@ -41,6 +41,7 @@ void MapManager::LoadLevel(int index) {
         bgMusic.setVolume(60.f);
         bgMusic.play();
     }
+
 }
 
 void MapManager::Update(float deltaTime) {

@@ -24,6 +24,7 @@ Enemy3::Enemy3(sf::Texture& texIdle, sf::Texture& texWalk, sf::Texture& texAttac
 
     currentAttackBox = sf::FloatRect();
     bodyHitbox = sf::FloatRect();
+
 }
 
 void Enemy3::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
@@ -93,8 +94,6 @@ void Enemy3::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
                 attackType = Boss3AttackType::Attack1;
             else                   // 80-99 -> 20%
                 attackType = Boss3AttackType::Attack;
-         
-
 
             ChangeState(EnemyState::Attacking);
             hitboxActive = false;
@@ -179,7 +178,7 @@ void Enemy3::Update(float deltaTime)
         velocity.y += gravity * deltaTime;
 
 
-    sprite.move(velocity * deltaTime);  
+    sprite.move(velocity * deltaTime);
 
     if (sprite.getPosition().y >= groundY)
     {
@@ -230,20 +229,42 @@ void Enemy3::Update(float deltaTime)
         switch (attackType)
         {
         case Boss3AttackType::Attack:
-            attackBox.width = 250.f; attackBox.height = 250.f;
-            attackBox.top = enemyY - 100.f;
-            attackBox.left = facingRight ? enemyX - 220.f : enemyX + 20.f;
+        {
+            attackBox.width = 250.f;
+            attackBox.height = 250.f;
+            attackBox.top = enemyY - 150.f;
+            if (facingRight)
+                attackBox.left = enemyX - 30.f;
+            else
+                attackBox.left = enemyX - attackBox.width + 30.f;
+
             break;
+        }
         case Boss3AttackType::Attack1:
-            attackBox.width = 500.f; attackBox.height = 50.f;
-            attackBox.top = enemyY + 130.f;
+            attackBox.width = 800.f; attackBox.height = 250.f;
+            attackBox.top = enemyY - 130.f;
             attackBox.left = enemyX - attackBox.width / 2.f;
             break;
         case Boss3AttackType::Attack2:
-            attackBox.width = 300.f; attackBox.height = 400.f;
-            attackBox.top = enemyY - 200.f;
-            attackBox.left = facingRight ? enemyX - 300.f : enemyX + 20.f;
+        {
+            // Vùng tấn công chính (màu vàng)
+            attackBox.width = 900.f;
+            attackBox.height = 300.f;
+            attackBox.top = enemyY;
+            attackBox.left = enemyX - attackBox.width / 2.f;
+
+            // Safe zone ở giữa (player đứng đây sẽ không bị trúng)
+            safeZoneLeft.width = 120.f;
+            safeZoneLeft.height = 120.f;
+            safeZoneLeft.left = enemyX - 250.f;
+            safeZoneLeft.top = enemyY + 200.f;
+
+            safeZoneRight.width = 120.f;
+            safeZoneRight.height = 120.f;
+            safeZoneRight.left = enemyX + 250.f - safeZoneRight.width; // căn đối xứng bên phải
+            safeZoneRight.top = enemyY + 200.f;
             break;
+        }
         default:
             attackBox = sf::FloatRect();
             break;
@@ -255,12 +276,12 @@ void Enemy3::Update(float deltaTime)
         currentAttackBox = sf::FloatRect();
 
     // Hitbox thân
-    bodyHitbox.width = 200.f;
-    bodyHitbox.height = 200.f;
+    bodyHitbox.width = 100.f;
+    bodyHitbox.height = 250.f;
     bodyOffset = sf::Vector2f(-bodyHitbox.width / 2.f, -bodyHitbox.height / 2.f);
     sf::Vector2f pos = sprite.getPosition();
     bodyHitbox.left = pos.x + bodyOffset.x;
-    bodyHitbox.top = pos.y + (bodyOffset.y + 50.f);
+    bodyHitbox.top = pos.y + (bodyOffset.y - 30.f);
 }
 
 
@@ -350,6 +371,23 @@ void Enemy3::Draw(sf::RenderWindow& window)
         atkBoxShape.setOutlineColor(sf::Color::Yellow);
         atkBoxShape.setOutlineThickness(1.f);
         window.draw(atkBoxShape);
+
+        if (attackType == Boss3AttackType::Attack2)
+        {
+            auto drawSafeZone = [&](const sf::FloatRect& zone)
+                {
+                    sf::RectangleShape shape;
+                    shape.setPosition(zone.left, zone.top);
+                    shape.setSize({ zone.width, zone.height });
+                    shape.setFillColor(sf::Color(0, 255, 0, 60)); // xanh mờ
+                    shape.setOutlineColor(sf::Color::Green);
+                    shape.setOutlineThickness(1.f);
+                    window.draw(shape);
+                };
+
+            drawSafeZone(safeZoneLeft);
+            drawSafeZone(safeZoneRight);
+        }
     }
 
     // Hitbox thân

@@ -1,5 +1,9 @@
 ﻿#pragma once
 #include "Map.h"
+#include "Enemy1.h"
+#include "Enemy2.h"
+#include "Enemy3.h"
+#include "EnemyManager.h"
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <string>
