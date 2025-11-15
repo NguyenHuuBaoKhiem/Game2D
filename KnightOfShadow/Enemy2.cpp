@@ -163,7 +163,7 @@ void Enemy2::Draw(sf::RenderWindow& window)
     window.draw(hpBack);
     window.draw(hpFront);
 
-    if (state == EnemyState::Attacking && hitboxActive)
+    /*if (state == EnemyState::Attacking && hitboxActive)
     {
         sf::RectangleShape atkBoxShape;
         atkBoxShape.setPosition(currentAttackBox.left, currentAttackBox.top);
@@ -180,7 +180,7 @@ void Enemy2::Draw(sf::RenderWindow& window)
     bodyBox.setFillColor(sf::Color(255, 0, 0, 40));
     bodyBox.setOutlineColor(sf::Color::Red);
     bodyBox.setOutlineThickness(1.f);
-    window.draw(bodyBox);
+    window.draw(bodyBox);*/
 }
 
 void Enemy2::UpdateAttackAnim(float deltaTime, const sf::Texture*& tex, sf::IntRect& rect)

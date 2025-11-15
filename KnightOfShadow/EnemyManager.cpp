@@ -1,4 +1,5 @@
 ﻿#include "EnemyManager.h"
+#include "Player.h"
 
 void EnemyManager::AddEnemy(std::unique_ptr<BaseEnemy> enemy) {
     enemies.push_back(std::move(enemy));
@@ -17,6 +18,19 @@ void EnemyManager::UpdateAll(float deltaTime, const sf::Vector2f& playerPos) {
             enemy3->HandleInput(deltaTime, playerPos);
         }
         e->Update(deltaTime);
+
+        sf::Vector2f pos = e->GetPosition();
+        float mapLeft = 0.f;
+        float mapRight = 1550.f; // chỉnh theo map
+        float mapTop = 0.f;
+        float mapBottom = 896.f;
+
+        if (pos.x < mapLeft) pos.x = mapLeft;
+        if (pos.x > mapRight) pos.x = mapRight;
+        if (pos.y < mapTop) pos.y = mapTop;
+        if (pos.y > mapBottom) pos.y = mapBottom;
+
+        e->SetPosition(pos);
     }
 
     RemoveDeadEnemies();

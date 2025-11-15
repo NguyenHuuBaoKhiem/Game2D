@@ -377,42 +377,42 @@ void Enemy3::Draw(sf::RenderWindow& window)
     window.draw(hpBack);
     window.draw(hpFront);
 
-    if (state == EnemyState::Attacking && hitboxActive)
-    {
-        sf::RectangleShape atkBoxShape;
-        atkBoxShape.setPosition(currentAttackBox.left, currentAttackBox.top);
-        atkBoxShape.setSize({ currentAttackBox.width, currentAttackBox.height });
-        atkBoxShape.setFillColor(sf::Color(255, 255, 0, 60));
-        atkBoxShape.setOutlineColor(sf::Color::Yellow);
-        atkBoxShape.setOutlineThickness(1.f);
-        window.draw(atkBoxShape);
+    //if (state == EnemyState::Attacking && hitboxActive)
+    //{
+    //    sf::RectangleShape atkBoxShape;
+    //    atkBoxShape.setPosition(currentAttackBox.left, currentAttackBox.top);
+    //    atkBoxShape.setSize({ currentAttackBox.width, currentAttackBox.height });
+    //    atkBoxShape.setFillColor(sf::Color(255, 255, 0, 60));
+    //    atkBoxShape.setOutlineColor(sf::Color::Yellow);
+    //    atkBoxShape.setOutlineThickness(1.f);
+    //    window.draw(atkBoxShape);
 
-        if (attackType == Boss3AttackType::Attack2)
-        {
-            auto drawSafeZone = [&](const sf::FloatRect& zone)
-                {
-                    sf::RectangleShape shape;
-                    shape.setPosition(zone.left, zone.top);
-                    shape.setSize({ zone.width, zone.height });
-                    shape.setFillColor(sf::Color(0, 255, 0, 60)); // xanh mờ
-                    shape.setOutlineColor(sf::Color::Green);
-                    shape.setOutlineThickness(1.f);
-                    window.draw(shape);
-                };
+    //    if (attackType == Boss3AttackType::Attack2)
+    //    {
+    //        auto drawSafeZone = [&](const sf::FloatRect& zone)
+    //            {
+    //                sf::RectangleShape shape;
+    //                shape.setPosition(zone.left, zone.top);
+    //                shape.setSize({ zone.width, zone.height });
+    //                shape.setFillColor(sf::Color(0, 255, 0, 60)); // xanh mờ
+    //                shape.setOutlineColor(sf::Color::Green);
+    //                shape.setOutlineThickness(1.f);
+    //                window.draw(shape);
+    //            };
 
-            drawSafeZone(safeZoneLeft);
-            drawSafeZone(safeZoneRight);
-        }
-    }
+    //        drawSafeZone(safeZoneLeft);
+    //        drawSafeZone(safeZoneRight);
+    //    }
+    //}
 
-    // Hitbox thân
-    sf::RectangleShape bodyBox;
-    bodyBox.setPosition(bodyHitbox.left, bodyHitbox.top);
-    bodyBox.setSize({ bodyHitbox.width, bodyHitbox.height });
-    bodyBox.setFillColor(sf::Color(255, 0, 0, 40));
-    bodyBox.setOutlineColor(sf::Color::Red);
-    bodyBox.setOutlineThickness(1.f);
-    window.draw(bodyBox);
+    //// Hitbox thân
+    //sf::RectangleShape bodyBox;
+    //bodyBox.setPosition(bodyHitbox.left, bodyHitbox.top);
+    //bodyBox.setSize({ bodyHitbox.width, bodyHitbox.height });
+    //bodyBox.setFillColor(sf::Color(255, 0, 0, 40));
+    //bodyBox.setOutlineColor(sf::Color::Red);
+    //bodyBox.setOutlineThickness(1.f);
+    //window.draw(bodyBox);
 }
 
 void Enemy3::ChangeState(EnemyState newState)

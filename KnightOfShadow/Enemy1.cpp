@@ -281,26 +281,26 @@ void Enemy1::Draw(sf::RenderWindow& window)
     window.draw(hpBack);
     window.draw(hpFront);
 
-    // Hitbox tấn công (nếu muốn hiển thị)
-    if (state == EnemyState::Attacking && hitboxActive)
-    {
-        sf::RectangleShape atkBoxShape;
-        atkBoxShape.setPosition(currentAttackBox.left, currentAttackBox.top);
-        atkBoxShape.setSize({ currentAttackBox.width, currentAttackBox.height });
-        atkBoxShape.setFillColor(sf::Color(255, 255, 0, 60));
-        atkBoxShape.setOutlineColor(sf::Color::Yellow);
-        atkBoxShape.setOutlineThickness(1.f);
-        window.draw(atkBoxShape);
-    }
+    //// Hitbox tấn công (nếu muốn hiển thị)
+    //if (state == EnemyState::Attacking && hitboxActive)
+    //{
+    //    sf::RectangleShape atkBoxShape;
+    //    atkBoxShape.setPosition(currentAttackBox.left, currentAttackBox.top);
+    //    atkBoxShape.setSize({ currentAttackBox.width, currentAttackBox.height });
+    //    atkBoxShape.setFillColor(sf::Color(255, 255, 0, 60));
+    //    atkBoxShape.setOutlineColor(sf::Color::Yellow);
+    //    atkBoxShape.setOutlineThickness(1.f);
+    //    window.draw(atkBoxShape);
+    //}
 
-    // Hitbox thân
-    sf::RectangleShape bodyBox;
-    bodyBox.setPosition(bodyHitbox.left, bodyHitbox.top);
-    bodyBox.setSize({ bodyHitbox.width, bodyHitbox.height });
-    bodyBox.setFillColor(sf::Color(255, 0, 0, 40));
-    bodyBox.setOutlineColor(sf::Color::Red);
-    bodyBox.setOutlineThickness(1.f);
-    window.draw(bodyBox);
+    //// Hitbox thân
+    //sf::RectangleShape bodyBox;
+    //bodyBox.setPosition(bodyHitbox.left, bodyHitbox.top);
+    //bodyBox.setSize({ bodyHitbox.width, bodyHitbox.height });
+    //bodyBox.setFillColor(sf::Color(255, 0, 0, 40));
+    //bodyBox.setOutlineColor(sf::Color::Red);
+    //bodyBox.setOutlineThickness(1.f);
+    //window.draw(bodyBox);
 }
 
 void Enemy1::ChangeState(EnemyState newState)

@@ -366,36 +366,36 @@ void Player::Draw(sf::RenderWindow& window)
     frontBar.setPosition(backBar.getPosition());
     window.draw(frontBar);
 
-    if (state == Attacking1 || state == Attacking2 || state == Attacking3)
-    {
-        sf::RectangleShape atkBoxShape;
-        atkBoxShape.setPosition(currentAttackBox.left, currentAttackBox.top);
-        atkBoxShape.setSize({ currentAttackBox.width, currentAttackBox.height });
-        atkBoxShape.setFillColor(sf::Color(255, 255, 0, 60)); // vàng trong suốt
-        atkBoxShape.setOutlineColor(sf::Color::Yellow);
-        atkBoxShape.setOutlineThickness(1.f);
-        window.draw(atkBoxShape);
-    }
+    //if (state == Attacking1 || state == Attacking2 || state == Attacking3)
+    //{
+    //    sf::RectangleShape atkBoxShape;
+    //    atkBoxShape.setPosition(currentAttackBox.left, currentAttackBox.top);
+    //    atkBoxShape.setSize({ currentAttackBox.width, currentAttackBox.height });
+    //    atkBoxShape.setFillColor(sf::Color(255, 255, 0, 60)); // vàng trong suốt
+    //    atkBoxShape.setOutlineColor(sf::Color::Yellow);
+    //    atkBoxShape.setOutlineThickness(1.f);
+    //    window.draw(atkBoxShape);
+    //}
 
-    if (state == Skill1)
-    {
-        sf::RectangleShape skillBoxShape;
-        skillBoxShape.setPosition(skill1Hitbox.left, skill1Hitbox.top);
-        skillBoxShape.setSize({ skill1Hitbox.width, skill1Hitbox.height });
-        skillBoxShape.setFillColor(sf::Color(0, 255, 255, 60)); // xanh cyan
-        skillBoxShape.setOutlineColor(sf::Color::Cyan);
-        skillBoxShape.setOutlineThickness(1.f);
-        window.draw(skillBoxShape);
-    }
+    //if (state == Skill1)
+    //{
+    //    sf::RectangleShape skillBoxShape;
+    //    skillBoxShape.setPosition(skill1Hitbox.left, skill1Hitbox.top);
+    //    skillBoxShape.setSize({ skill1Hitbox.width, skill1Hitbox.height });
+    //    skillBoxShape.setFillColor(sf::Color(0, 255, 255, 60)); // xanh cyan
+    //    skillBoxShape.setOutlineColor(sf::Color::Cyan);
+    //    skillBoxShape.setOutlineThickness(1.f);
+    //    window.draw(skillBoxShape);
+    //}
 
-    // Vẽ vùng thân người (để so sánh)
-    sf::RectangleShape bodyBox;
-    bodyBox.setPosition(bodyHitbox.left, bodyHitbox.top);
-    bodyBox.setSize({ bodyHitbox.width, bodyHitbox.height });
-    bodyBox.setFillColor(sf::Color(255, 0, 0, 40)); // đỏ nhạt trong suốt
-    bodyBox.setOutlineColor(sf::Color::Red);
-    bodyBox.setOutlineThickness(1.f);
-    window.draw(bodyBox);
+    //// Vẽ vùng thân người (để so sánh)
+    //sf::RectangleShape bodyBox;
+    //bodyBox.setPosition(bodyHitbox.left, bodyHitbox.top);
+    //bodyBox.setSize({ bodyHitbox.width, bodyHitbox.height });
+    //bodyBox.setFillColor(sf::Color(255, 0, 0, 40)); // đỏ nhạt trong suốt
+    //bodyBox.setOutlineColor(sf::Color::Red);
+    //bodyBox.setOutlineThickness(1.f);
+    //window.draw(bodyBox);
 }
 
 void Player::ChangeState(PlayerState newState)

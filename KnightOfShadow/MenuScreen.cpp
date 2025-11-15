@@ -89,42 +89,55 @@ void MenuScreen::Update(float dt, sf::RenderWindow& window) {
         fadeRect.setFillColor(sf::Color(0, 0, 0, (sf::Uint8)fadeAlpha));
     }
 
-    // Blink text
-    blinkTimer += dt * blinkSpeed;
-    if (blinkTimer >= 1.f) {
-        showText = !showText;
-        blinkTimer = 0.f;
-    }
-
+    // ================================
+    //   NHẤN PHÍM BẤT KÌ ĐỂ START
+    // ================================
     if (!isFadingOut) {
-        // Hiệu ứng chữ nhấp nháy
-        blinkTimer += dt * blinkSpeed;
-        if (blinkTimer >= 1.f) {
-            showText = !showText;
-            blinkTimer = 0.f;
+        for (int k = 0; k < sf::Keyboard::KeyCount; k++) {
+            if (sf::Keyboard::isKeyPressed((sf::Keyboard::Key)k)) {
+                isFadingOut = true;
+                introSound.stop();   // Tắt sound intro
+                break;
+            }
         }
     }
-    else {
+
+    // ================================
+    //       HIỆU ỨNG FADE-OUT
+    // ================================
+    if (isFadingOut) {
         static bool startSoundPlayed = false;
+
+        // Play sound start 1 lần duy nhất
         if (!startSoundPlayed) {
             startSound.play();
             startSoundPlayed = true;
         }
 
-        // Hiệu ứng fade-out
+        // Fade-out screen
         fadeOutAlpha += 150 * dt;
         if (fadeOutAlpha > 255) fadeOutAlpha = 255;
         fadeRect.setFillColor(sf::Color(0, 0, 0, (sf::Uint8)fadeOutAlpha));
 
+        // Fade-out nhạc menu
         if (musicVolume > 0.f) {
-            musicVolume -= 80.f * dt; // tốc độ giảm (60–100 là hợp lý)
+            musicVolume -= 80.f * dt;
             if (musicVolume < 0.f) musicVolume = 0.f;
             bgMusic.setVolume(musicVolume);
         }
-        // Khi fade-out hoàn tất -> chuyển sang game
+
+        // Fade-out xong
         if (fadeOutAlpha >= 255) {
-            bgMusic.stop();
-            isActive = false;
+            bgMusic.stop();      // ❗ Nhạc dừng hoàn toàn → KHÔNG TRÙNG NỮA
+            isActive = false;    // → Qua game
+        }
+    }
+    else {
+        // Blink text (chỉ chạy khi chưa fade-out)
+        blinkTimer += dt * blinkSpeed;
+        if (blinkTimer >= 1.f) {
+            showText = !showText;
+            blinkTimer = 0.f;
         }
     }
 }
