@@ -19,6 +19,19 @@ int main() {
     int currentLevel = 0;
     map.Load("Assets/Images/Map/Map.ldtk", levelNames[currentLevel]);
 
+    sf::Music bgMusic;
+    std::vector<std::string> musicPaths = {
+        "Assets/Music/intro.mp3",
+        "Assets/Music/boss2.mp3",
+        "Assets/Music/boss22.mp3",
+        "Assets/Music/boss3.mp3"
+    };
+
+    if (!musicPaths[currentLevel].empty() && bgMusic.openFromFile(musicPaths[currentLevel])) {
+        bgMusic.setLoop(true);
+        bgMusic.setVolume(60.f); // chỉnh âm lượng
+        bgMusic.play();
+    }
     // --- PLAYER ---
     sf::Texture texIdle, texWalk, texAttack1, texAttack2, texAttack3, texSkill1, texDeath;
     texWalk.loadFromFile("Assets/Images/Player/run.png");
@@ -43,67 +56,8 @@ int main() {
     // --- ENEMY MANAGER ---
     EnemyManager enemyManager;
 
-    //// --- BOSS 1 ---
-
-
-    /*auto boss1 = std::make_unique<Enemy1>(tIdle, tWalk, tAttack, tAttack1, tAttack2, tDeath);
-    boss1->SetPosition({ 700.f, 500.f });
-    enemyManager.AddEnemy(std::move(boss1));*/
-
-    //// --- BOSS 2 ---
-
-
-    /*auto boss2 = std::make_unique<Enemy2>(tIdlee, tWalkk, tAttackk, tDeathh);
-    boss2->SetPosition({ 1000.f, 500.f });
-    enemyManager.AddEnemy(std::move(boss2));*/
-
-    // --- BOSS 3 (có teleport) ---
-
-
-    /*auto boss3 = std::make_unique<Enemy3>(tIdle3, tWalk3, tAttack3, tAttack13, tAttack23, tTele3, tDeath3);
-    boss3->SetPosition({ 1300.f, 700.f });
-    enemyManager.AddEnemy(std::move(boss3));*/
-
     // --- MENU ---
     MenuScreen menu(window);
-
-    //sf::Texture tIdle, tWalk, tAttack, tDeath, tAttack1, tAttack2;
-    //tIdle.loadFromFile("Assets/Images/Enemy/idle.png");
-    //tWalk.loadFromFile("Assets/Images/Enemy/walk.png");
-    //tAttack.loadFromFile("Assets/Images/Enemy/attack.png");
-    //tAttack1.loadFromFile("Assets/Images/Enemy/at1.png");
-    //tAttack2.loadFromFile("Assets/Images/Enemy/at2.png");
-    //tDeath.loadFromFile("Assets/Images/Enemy/death.png");
-
-    //auto boss1 = std::make_unique<Enemy1>(tIdle, tWalk, tAttack, tAttack1, tAttack2, tDeath);
-    //boss1->SetPosition({ 700.f, 500.f });
-    //enemyManager.AddEnemy(std::move(boss1));
-
-    ////// --- BOSS 2 ---
-    //sf::Texture tIdlee, tWalkk, tAttackk, tDeathh;
-    //tIdlee.loadFromFile("Assets/Images/Enemy/idle_1.png");
-    //tWalkk.loadFromFile("Assets/Images/Enemy/walk_1.png");
-    //tAttackk.loadFromFile("Assets/Images/Enemy/attack_1.png");
-    //tDeathh.loadFromFile("Assets/Images/Enemy/death_1.png");
-
-    //auto boss2 = std::make_unique<Enemy2>(tIdlee, tWalkk, tAttackk, tDeathh);
-    //boss2->SetPosition({ 1000.f, 500.f });
-    //enemyManager.AddEnemy(std::move(boss2));
-
-    // --- BOSS 3 ---
-    //sf::Texture tIdle3, tWalk3, tAttack3, tAttack13, tAttack23,tTele, tDeath3;
-    //tIdle3.loadFromFile("Assets/Images/Enemy/tele.png");
-    //tWalk3.loadFromFile("Assets/Images/Enemy/walk_2.png");
-    //tAttack3.loadFromFile("Assets/Images/Enemy/attack_2.png");
-    //tAttack13.loadFromFile("Assets/Images/Enemy/at1_2.png");
-    //tAttack23.loadFromFile("Assets/Images/Enemy/at2_2.png");
-    //tTele.loadFromFile("Assets/Images/Enemy/tele.png");
-    //tDeath3.loadFromFile("Assets/Images/Enemy/death_2.png");
-
-    //auto boss3 = std::make_unique<Enemy3>(tIdle3, tWalk3, tAttack3, tAttack13, tAttack23,tTele, tDeath3);
-    //boss3->SetPosition({ 1300.f, 500.f });
-    //enemyManager.AddEnemy(std::move(boss3));
-
 
     sf::Clock clock;
 
@@ -120,7 +74,6 @@ int main() {
         }
 
         float deltaTime = clock.restart().asSeconds();
-
         window.clear(sf::Color(70, 100, 150)); // nền sáng nhẹ
 
         // --- MENU ---
@@ -258,8 +211,17 @@ int main() {
                             }
 
                             auto boss = std::make_unique<Enemy3>(tIdle3, tWalk3, tAttack3, tAttack13, tAttack23, tTele3, tDeath3);
-                            boss->SetPosition({ 1000.f, 550.f });
+                            boss->SetPosition({ 830.f, 380.f });
                             enemyManager.AddEnemy(std::move(boss));
+                        }
+
+                        if (!bgMusic.openFromFile(musicPaths[currentLevel])) {
+                            std::cerr << "Không thể load nhạc cho level " << currentLevel << "\n";
+                        }
+                        else {
+                            bgMusic.setLoop(true);
+                            bgMusic.setVolume(60.f);
+                            bgMusic.play();
                         }
                     }
                 }
@@ -269,6 +231,12 @@ int main() {
             map.Draw(window);
             player.Draw(window);
             enemyManager.DrawAll(window);
+            // Vẽ thanh máu boss
+            for (const auto& e : enemyManager.GetEnemies())
+            {
+                // Giả sử tất cả enemy đều có DrawHP()
+                e->DrawHP(window);
+            }
         }
 
         window.display();

@@ -20,8 +20,8 @@ protected:
     bool isDead = false;
 
     // --- Máu ---
-    float health = 100.f;
-    float maxHealth = 100.f;
+    float health;
+    float maxHealth;
 
     // --- Vật lý ---
     sf::Vector2f velocity;
@@ -98,4 +98,6 @@ public:
     virtual std::vector<sf::FloatRect> GetSafeZones() const { return {}; }
 
     bool IsDeathAnimFinished() const { return deathAnimFinished; }
+    virtual void DrawHP(sf::RenderWindow& window) = 0; // hàm ảo thuần
+
 };

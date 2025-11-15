@@ -25,6 +25,9 @@ private:
     float groundY = 610.f;
     bool hitboxActive = false;
 
+    sf::RectangleShape hpBack;  // Nền xám
+    sf::RectangleShape hpFront; // Thanh đỏ
+
     // === HĂ m ná»™i bá»™ ===
     void UpdateAttackAnim(float deltaTime, const sf::Texture*& tex, sf::IntRect& rect);
     void ChangeState(EnemyState newState);
@@ -41,4 +44,10 @@ public:
     void Update(float deltaTime) override;
     void Draw(sf::RenderWindow& window) override;
     void TakeDamage(int damage) override;
+
+    // **Thêm hàm DrawHP**
+    void DrawHP(sf::RenderWindow& window) {
+        window.draw(hpBack);
+        window.draw(hpFront);
+    }
 };

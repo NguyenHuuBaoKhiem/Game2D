@@ -24,6 +24,19 @@ Enemy1::Enemy1(sf::Texture& texIdle, sf::Texture& texWalk, sf::Texture& texAttac
 
     currentAttackBox = sf::FloatRect();
     bodyHitbox = sf::FloatRect();
+
+    maxHealth = 500;
+    health = maxHealth;
+
+    // Nền xám
+    hpBack.setSize(sf::Vector2f(600.f, 20.f)); // dài 600, cao 20
+    hpBack.setFillColor(sf::Color(50, 50, 50)); // màu xám
+    hpBack.setPosition(500.f, 70.f);           // giữa màn hình
+
+    // Thanh đỏ
+    hpFront.setSize(sf::Vector2f(600.f, 20.f));
+    hpFront.setFillColor(sf::Color::Red);
+    hpFront.setPosition(hpBack.getPosition());
 }
 
 void Enemy1::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
@@ -260,11 +273,15 @@ void Enemy1::UpdateAttackAnim(float deltaTime, const sf::Texture*& tex, sf::IntR
     }
 }
 
-
 void Enemy1::Draw(sf::RenderWindow& window)
 {
     window.draw(sprite);
 
+    // Vẽ thanh máu ở trên cùng giữa màn hình
+    window.draw(hpBack);
+    window.draw(hpFront);
+
+    // Hitbox tấn công (nếu muốn hiển thị)
     if (state == EnemyState::Attacking && hitboxActive)
     {
         sf::RectangleShape atkBoxShape;
@@ -309,4 +326,8 @@ void Enemy1::ChangeState(EnemyState newState)
 void Enemy1::TakeDamage(int damage)
 {
     BaseEnemy::TakeDamage(damage);
+
+    // cập nhật thanh đỏ
+    float ratio = health / maxHealth;
+    hpFront.setSize(sf::Vector2f(600.f * ratio, 20.f));
 }

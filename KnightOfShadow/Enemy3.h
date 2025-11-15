@@ -24,8 +24,8 @@ private:
     Boss3AttackType attackType = Boss3AttackType::None;
     // --- Hành vi ---
     float moveSpeed = 200.f;
-    float detectionRange = 800.f;
-    float attackRange = 500.f;
+    float detectionRange = 400.f;
+    float attackRange = 400.f;
 
     float attackCooldown = 0.5f;
     float attackCooldownTimer = 0.f;
@@ -54,14 +54,17 @@ private:
     sf::Vector2f attack2Target;         // vị trí teleport lên đầu player
 
     bool justFinishedAttack2 = false;             // bật true ngay sau khi Attack2 kết thúc
-    float teleCooldownNormal = 6.f;             // cooldown teleport bình thường
+    float teleCooldownNormal = 10.f;             // cooldown teleport bình thường
     float teleCooldownAfterAttack2 = 0.2f;
 
-    float groundY = 455.f;
+    float groundY = 665.f;
     bool hitboxActive = false;
 
     sf::FloatRect safeZoneLeft;
     sf::FloatRect safeZoneRight;
+
+    sf::RectangleShape hpBack;  // Nền xám
+    sf::RectangleShape hpFront; // Thanh đỏ
 
     // === Hàm nội bộ ===
     void UpdateAttackAnim(float deltaTime, const sf::Texture*& tex, sf::IntRect& rect);
@@ -84,5 +87,11 @@ public:
     void TakeDamage(int damage) override;
     std::vector<sf::FloatRect> GetSafeZones() const override {
         return { safeZoneLeft, safeZoneRight };
+    }
+
+    // **Thêm hàm DrawHP**
+    void DrawHP(sf::RenderWindow& window) {
+        window.draw(hpBack);
+        window.draw(hpFront);
     }
 };

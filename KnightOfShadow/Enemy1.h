@@ -40,6 +40,9 @@ private:
 
     float groundY = 550.f;
 
+    sf::RectangleShape hpBack;  // nền xám
+    sf::RectangleShape hpFront; // thanh đỏ
+
     // === Hàm nội bộ ===
     void UpdateAttackAnim(float deltaTime, const sf::Texture*& tex, sf::IntRect& rect);
     void ChangeState(EnemyState newState);
@@ -58,4 +61,10 @@ public:
     void Update(float deltaTime) override;
     void Draw(sf::RenderWindow& window) override;
     void TakeDamage(int damage) override;
+
+    // **Thêm hàm DrawHP**
+    void DrawHP(sf::RenderWindow& window) {
+        window.draw(hpBack);
+        window.draw(hpFront);
+    }
 };

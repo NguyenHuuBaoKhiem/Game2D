@@ -52,7 +52,7 @@ Player::Player(sf::Texture& texIdle, sf::Texture& texWalk,
     avatarSprite.setScale(0.5f, 0.5f); // tuỳ chỉnh size
     avatarSprite.setPosition(1.f, 10.f); // góc trái màn hình
 
-    maxHealth = 500.f;
+    maxHealth = 5000.f;
     health = maxHealth;
 
     // Nền

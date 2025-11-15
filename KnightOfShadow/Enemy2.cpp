@@ -16,6 +16,19 @@ Enemy2::Enemy2(sf::Texture & texIdle, sf::Texture & texWalk,
     sprite.setPosition(800, 400);
     sprite.setOrigin(rect.width / 2.f, rect.height / 2.f);
     sprite.setScale(0.3f, 0.3f);
+
+    maxHealth = 500;   // ví dụ máu boss 2
+    health = maxHealth;
+
+    // Nền xám
+    hpBack.setSize(sf::Vector2f(600.f, 20.f)); // dài 600, cao 20
+    hpBack.setFillColor(sf::Color(50, 50, 50)); // màu xám
+    hpBack.setPosition(500.f, 70.f);           // giữa màn hình
+
+    // Thanh đỏ
+    hpFront.setSize(sf::Vector2f(600.f, 20.f));
+    hpFront.setFillColor(sf::Color::Red);
+    hpFront.setPosition(hpBack.getPosition());
 }
 
 void Enemy2::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
@@ -147,6 +160,9 @@ void Enemy2::Draw(sf::RenderWindow& window)
 {
     window.draw(sprite);
 
+    window.draw(hpBack);
+    window.draw(hpFront);
+
     if (state == EnemyState::Attacking && hitboxActive)
     {
         sf::RectangleShape atkBoxShape;
@@ -203,5 +219,9 @@ void Enemy2::ChangeState(EnemyState newState)
 }
 void Enemy2::TakeDamage(int damage)
 {
-    BaseEnemy::TakeDamage(damage);
+    BaseEnemy::TakeDamage(damage); // trừ máu
+
+    // Cập nhật thanh đỏ
+    float ratio = health / maxHealth;
+    hpFront.setSize(sf::Vector2f(600.f * ratio, 20.f));
 }
