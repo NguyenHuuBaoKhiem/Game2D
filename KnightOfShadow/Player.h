@@ -84,10 +84,14 @@ private:
     float hitTimer = 0.f;
     bool isDead = false;
 
+    float skill1Cooldown = 3.f;      // thời gian hồi chiêu (3s)
+    float skill1CooldownTimer = 0.f;
+
     sf::RectangleShape hpBarBack;   // nền đen/màu tối
     sf::RectangleShape hpBarFront;  // thanh máu đỏ
     float maxHealth;                // HP tối đa
     float health;                   // HP hiện tại
+    sf::Font font;
 
     sf::Texture avatarTex;
     sf::Sprite avatarSprite;

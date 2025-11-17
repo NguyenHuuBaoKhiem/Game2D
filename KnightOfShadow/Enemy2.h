@@ -10,6 +10,10 @@ private:
     BossAnimation attackAnim;
     BossAnimation deathAnim;
 
+    //Âm thanh
+    sf::SoundBuffer at_buffer;
+    sf::Sound attackSound;
+
     // --- HĂ nh vi ---
     float moveSpeed = 100.f;
     float detectionRange = 700.f;
@@ -19,14 +23,11 @@ private:
     float attackCooldownTimer = 0.f;
     float attackTimer = 0.f;
 
-    float attackActiveTime_Attack = 0.3f;
+    float attackActiveTime_Attack = 0.5f;
     float attackDuration_Attack = 0.7f;
 
     float groundY = 610.f;
     bool hitboxActive = false;
-
-    sf::RectangleShape hpBack;  // Nền xám
-    sf::RectangleShape hpFront; // Thanh đỏ
 
     // === HĂ m ná»™i bá»™ ===
     void UpdateAttackAnim(float deltaTime, const sf::Texture*& tex, sf::IntRect& rect);

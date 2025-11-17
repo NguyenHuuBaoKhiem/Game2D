@@ -17,18 +17,16 @@ Enemy2::Enemy2(sf::Texture & texIdle, sf::Texture & texWalk,
     sprite.setOrigin(rect.width / 2.f, rect.height / 2.f);
     sprite.setScale(0.3f, 0.3f);
 
-    maxHealth = 500;   // ví dụ máu boss 2
+    //Load âm thanh
+    at_buffer.loadFromFile("Assets/Sound effect/Enemy/Boss1/at.mp3");
+
+    maxHealth = 1000.f;   // ví dụ máu boss 2
     health = maxHealth;
 
-    // Nền xám
-    hpBack.setSize(sf::Vector2f(600.f, 20.f)); // dài 600, cao 20
-    hpBack.setFillColor(sf::Color(50, 50, 50)); // màu xám
-    hpBack.setPosition(500.f, 70.f);           // giữa màn hình
+    font.loadFromFile("Assets/Font/1.ttf");
+    InitHPBar({ 500.f, 70.f }, 600.f, 20.f, "Frost Guardian: Sentinel of the Frozen Throne");
+    bossNameText.setPosition(hpBack.getPosition().x + 70.f, hpBack.getPosition().y - 35.f);
 
-    // Thanh đỏ
-    hpFront.setSize(sf::Vector2f(600.f, 20.f));
-    hpFront.setFillColor(sf::Color::Red);
-    hpFront.setPosition(hpBack.getPosition());
 }
 
 void Enemy2::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
@@ -162,6 +160,16 @@ void Enemy2::Draw(sf::RenderWindow& window)
 
     window.draw(hpBack);
     window.draw(hpFront);
+    window.draw(hpBorder);
+
+    UpdateHPBarText();
+
+    // đặt text hơi cao hơn thanh
+    sf::Vector2f hpPos = hpBack.getPosition();
+    sf::Vector2f hpSize = hpBack.getSize();
+    hpText.setPosition(hpPos.x + hpSize.x / 2.f, hpPos.y + hpSize.y / 2.f + 20.f); // -8 để lên trên
+    window.draw(hpText);
+    window.draw(bossNameText);
 
     /*if (state == EnemyState::Attacking && hitboxActive)
     {
@@ -213,7 +221,12 @@ void Enemy2::ChangeState(EnemyState newState)
     {
     case EnemyState::Idle: idleAnim.Reset(); break;
     case EnemyState::Walking: walkAnim.Reset(); break;
-    case EnemyState::Attacking: attackAnim.Reset(); attackTimer = 0.f; break;
+    case EnemyState::Attacking: attackAnim.Reset();
+        attackTimer = 0.f;
+        attackSound.setBuffer(at_buffer);
+        attackSound.setVolume(30.f);
+        attackSound.play();
+        break;
     case EnemyState::Death: deathAnim.Reset(); break;
     }
 }

@@ -20,6 +20,13 @@ private:
     BossAnimation teleAnim;
     BossAnimation deathAnim;
 
+    //Âm thanh
+    sf::SoundBuffer at_buffer;
+    sf::SoundBuffer at1_buffer;
+    sf::SoundBuffer at2_buffer;
+    sf::SoundBuffer tele_buffer;
+    sf::Sound attackSound;
+
     // === Tấn công ===
     Boss3AttackType attackType = Boss3AttackType::None;
     // --- Hành vi ---
@@ -57,14 +64,11 @@ private:
     float teleCooldownNormal = 8.f;             // cooldown teleport bình thường
     float teleCooldownAfterAttack2 = 0.2f;
 
-    float groundY = 665.f;
+    float groundY = 640.f;
     bool hitboxActive = false;
 
     sf::FloatRect safeZoneLeft;
     sf::FloatRect safeZoneRight;
-
-    sf::RectangleShape hpBack;  // Nền xám
-    sf::RectangleShape hpFront; // Thanh đỏ
 
     // === Hàm nội bộ ===
     void UpdateAttackAnim(float deltaTime, const sf::Texture*& tex, sf::IntRect& rect);

@@ -19,6 +19,12 @@ private:
     BossAnimation attack2Anim;
     BossAnimation deathAnim;
 
+    //Âm thanh
+    sf::SoundBuffer at_buffer;
+    sf::SoundBuffer at1_buffer;
+    sf::SoundBuffer at2_buffer;
+    sf::Sound attackSound;
+
     // === Tấn công ===
     BossAttackType attackType = BossAttackType::None;
     // --- Hành vi ---
@@ -30,8 +36,8 @@ private:
     float attackCooldownTimer = 0.f;
     float attackTimer = 0.f;
 
-    float attackActiveTime_Attack = 0.3f;
-    float attackDuration_Attack = 0.7f;
+    float attackActiveTime_Attack = 0.5f;
+    float attackDuration_Attack = 0.5f;
     float attackActiveTime_Attack1 = 0.8f;
     float attackDuration_Attack1 = 0.5f;
     float attackActiveTime_Attack2 = 0.5f;
@@ -39,9 +45,6 @@ private:
     bool hitboxActive = false;
 
     float groundY = 550.f;
-
-    sf::RectangleShape hpBack;  // nền xám
-    sf::RectangleShape hpFront; // thanh đỏ
 
     // === Hàm nội bộ ===
     void UpdateAttackAnim(float deltaTime, const sf::Texture*& tex, sf::IntRect& rect);

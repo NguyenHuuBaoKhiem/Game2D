@@ -25,18 +25,17 @@ Enemy1::Enemy1(sf::Texture& texIdle, sf::Texture& texWalk, sf::Texture& texAttac
     currentAttackBox = sf::FloatRect();
     bodyHitbox = sf::FloatRect();
 
-    maxHealth = 500;
+    // Load âm thanh
+    at_buffer.loadFromFile("Assets/Sound effect/Enemy/Boss2/attack.mp3");
+    at1_buffer.loadFromFile("Assets/Sound effect/Enemy/Boss2/at1.mp3");
+    at2_buffer.loadFromFile("Assets/Sound effect/Enemy/Boss2/at2.mp3");
+
+    maxHealth = 2000.f;
     health = maxHealth;
 
-    // Nền xám
-    hpBack.setSize(sf::Vector2f(600.f, 20.f)); // dài 600, cao 20
-    hpBack.setFillColor(sf::Color(50, 50, 50)); // màu xám
-    hpBack.setPosition(500.f, 70.f);           // giữa màn hình
-
-    // Thanh đỏ
-    hpFront.setSize(sf::Vector2f(600.f, 20.f));
-    hpFront.setFillColor(sf::Color::Red);
-    hpFront.setPosition(hpBack.getPosition());
+    font.loadFromFile("Assets/Font/1.ttf");
+    InitHPBar({ 500.f, 70.f }, 600.f, 20.f, "Malzakar: Lord of the Eternal Hellforge");
+    bossNameText.setPosition(hpBack.getPosition().x + 95.f, hpBack.getPosition().y - 35.f);
 }
 
 void Enemy1::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
@@ -280,18 +279,27 @@ void Enemy1::Draw(sf::RenderWindow& window)
     // Vẽ thanh máu ở trên cùng giữa màn hình
     window.draw(hpBack);
     window.draw(hpFront);
+    window.draw(hpBorder);
+    UpdateHPBarText();
 
-    //// Hitbox tấn công (nếu muốn hiển thị)
-    //if (state == EnemyState::Attacking && hitboxActive)
-    //{
-    //    sf::RectangleShape atkBoxShape;
-    //    atkBoxShape.setPosition(currentAttackBox.left, currentAttackBox.top);
-    //    atkBoxShape.setSize({ currentAttackBox.width, currentAttackBox.height });
-    //    atkBoxShape.setFillColor(sf::Color(255, 255, 0, 60));
-    //    atkBoxShape.setOutlineColor(sf::Color::Yellow);
-    //    atkBoxShape.setOutlineThickness(1.f);
-    //    window.draw(atkBoxShape);
-    //}
+    // đặt text hơi cao hơn thanh
+    sf::Vector2f hpPos = hpBack.getPosition();
+    sf::Vector2f hpSize = hpBack.getSize();
+    hpText.setPosition(hpPos.x + hpSize.x / 2.f, hpPos.y + hpSize.y / 2.f + 20.f); // -8 để lên trên
+    window.draw(hpText);
+    window.draw(bossNameText);
+
+    // Hitbox tấn công (nếu muốn hiển thị)
+  /*  if (state == EnemyState::Attacking && hitboxActive)
+    {
+        sf::RectangleShape atkBoxShape;
+        atkBoxShape.setPosition(currentAttackBox.left, currentAttackBox.top);
+        atkBoxShape.setSize({ currentAttackBox.width, currentAttackBox.height });
+        atkBoxShape.setFillColor(sf::Color(255, 255, 0, 60));
+        atkBoxShape.setOutlineColor(sf::Color::Yellow);
+        atkBoxShape.setOutlineThickness(1.f);
+        window.draw(atkBoxShape);
+    }*/
 
     //// Hitbox thân
     //sf::RectangleShape bodyBox;
@@ -315,9 +323,24 @@ void Enemy1::ChangeState(EnemyState newState)
     case EnemyState::Idle: idleAnim.Reset(); break;
     case EnemyState::Walking: walkAnim.Reset(); break;
     case EnemyState::Attacking:
-        if (attackType == BossAttackType::Attack) attackAnim.Reset();
-        else if (attackType == BossAttackType::Attack1) attack1Anim.Reset();
-        else if (attackType == BossAttackType::Attack2) attack2Anim.Reset();
+        if (attackType == BossAttackType::Attack) {
+            attackAnim.Reset();
+            attackSound.setBuffer(at_buffer);
+            attackSound.setVolume(15.f);
+            attackSound.play();
+        }
+        else if (attackType == BossAttackType::Attack1) {
+            attack1Anim.Reset();
+            attackSound.setBuffer(at1_buffer);
+            attackSound.setVolume(15.f);
+            attackSound.play();
+        }
+        else if (attackType == BossAttackType::Attack2) {
+            attack2Anim.Reset();
+            attackSound.setBuffer(at2_buffer);
+            attackSound.setVolume(15.f);
+            attackSound.play();
+        }
         break;
     case EnemyState::Death: deathAnim.Reset(); break;
     }

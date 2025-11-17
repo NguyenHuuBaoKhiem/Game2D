@@ -73,7 +73,7 @@ int main() {
                 mapMusicStarted = true;
                 if (!musicPaths[currentLevel].empty() && bgMusic.openFromFile(musicPaths[currentLevel])) {
                     bgMusic.setLoop(true);
-                    bgMusic.setVolume(10.f);
+                    bgMusic.setVolume(20.f);
                     bgMusic.play();
                 }
             }

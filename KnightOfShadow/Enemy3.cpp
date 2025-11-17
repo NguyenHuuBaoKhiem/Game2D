@@ -25,18 +25,15 @@ Enemy3::Enemy3(sf::Texture& texIdle, sf::Texture& texWalk, sf::Texture& texAttac
     currentAttackBox = sf::FloatRect();
     bodyHitbox = sf::FloatRect();
 
-    maxHealth = 500;   // ví dụ máu boss 2
+    //Load âm thanh
+    tele_buffer.loadFromFile("Assets/Sound effect/Enemy/Boss1/at.mp3");
+
+    maxHealth = 3000.f;   // ví dụ máu boss 2
     health = maxHealth;
 
-    // Nền xám
-    hpBack.setSize(sf::Vector2f(600.f, 20.f)); // dài 600, cao 20
-    hpBack.setFillColor(sf::Color(50, 50, 50)); // màu xám
-    hpBack.setPosition(500.f, 70.f);           // giữa màn hình
-
-    // Thanh đỏ
-    hpFront.setSize(sf::Vector2f(600.f, 20.f));
-    hpFront.setFillColor(sf::Color::Red);
-    hpFront.setPosition(hpBack.getPosition());
+    font.loadFromFile("Assets/Font/1.ttf");
+    InitHPBar({ 500.f, 70.f }, 600.f, 20.f, "Selvaria: Vesperyn the Bloodveil Empress");
+    bossNameText.setPosition(hpBack.getPosition().x + 110.f, hpBack.getPosition().y - 35.f);
 }
 
 void Enemy3::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
@@ -376,6 +373,16 @@ void Enemy3::Draw(sf::RenderWindow& window)
 
     window.draw(hpBack);
     window.draw(hpFront);
+    window.draw(hpBorder);
+
+    UpdateHPBarText();
+
+    // đặt text hơi cao hơn thanh
+    sf::Vector2f hpPos = hpBack.getPosition();
+    sf::Vector2f hpSize = hpBack.getSize();
+    hpText.setPosition(hpPos.x + hpSize.x / 2.f, hpPos.y + hpSize.y / 2.f + 20.f); // -8 để lên trên
+    window.draw(hpText);
+    window.draw(bossNameText);
 
     //if (state == EnemyState::Attacking && hitboxActive)
     //{
@@ -427,9 +434,24 @@ void Enemy3::ChangeState(EnemyState newState)
     case EnemyState::Idle: idleAnim.Reset(); break;
     case EnemyState::Walking: walkAnim.Reset(); break;
     case EnemyState::Attacking:
-        if (attackType == Boss3AttackType::Attack) attackAnim.Reset();
-        else if (attackType == Boss3AttackType::Attack1) attack1Anim.Reset();
-        else if (attackType == Boss3AttackType::Attack2) attack2Anim.Reset();
+        if (attackType == Boss3AttackType::Attack) {
+            attackAnim.Reset();
+            attackSound.setBuffer(tele_buffer);
+            attackSound.setVolume(70.f);
+            attackSound.play();
+        }
+        else if (attackType == Boss3AttackType::Attack1) {
+            attack1Anim.Reset();
+            attackSound.setBuffer(at_buffer);
+            attackSound.setVolume(30.f);
+            attackSound.play();
+        }
+        else if (attackType == Boss3AttackType::Attack2) {
+            attack2Anim.Reset();
+            attackSound.setBuffer(at_buffer);
+            attackSound.setVolume(30.f);
+            attackSound.play();
+        }
         break;
     case EnemyState::Death: deathAnim.Reset();
         isTeleporting = false;

@@ -20,8 +20,8 @@ protected:
     bool isDead = false;
 
     // --- Máu ---
-    float health;
-    float maxHealth;
+    float health=100.f;
+    float maxHealth=100.f;
 
     // --- Vật lý ---
     sf::Vector2f velocity;
@@ -40,6 +40,13 @@ protected:
     float hitTimer = 0.f;
 
     bool deathAnimFinished = false;
+
+    sf::RectangleShape hpBack;  // nền xám
+    sf::RectangleShape hpFront; // thanh đỏ
+    sf::RectangleShape hpBorder;
+
+    sf::Text hpText, bossNameText;
+    sf::Font font;
 
 public:
     virtual ~BaseEnemy() = default;
@@ -100,4 +107,50 @@ public:
     bool IsDeathAnimFinished() const { return deathAnimFinished; }
     virtual void DrawHP(sf::RenderWindow& window) = 0; // hàm ảo thuần
 
+    void InitHPBar(const sf::Vector2f& position, float width, float height, const std::string& bossName)
+    {
+        hpBack.setSize({ width, height });
+        hpBack.setFillColor(sf::Color(50, 50, 50));
+        hpBack.setPosition(position);
+
+        hpFront.setSize({ width, height });
+        hpFront.setFillColor(sf::Color::Red);
+        hpFront.setPosition(position);
+
+        hpBorder.setSize(hpBack.getSize());
+        hpBorder.setFillColor(sf::Color::Transparent);
+        hpBorder.setOutlineColor(sf::Color::White);
+        hpBorder.setOutlineThickness(3.f);
+        hpBorder.setPosition(position);
+
+        // đảm bảo font đã load
+        hpText.setFont(font);
+        hpText.setCharacterSize(20);
+        hpText.setFillColor(sf::Color::White);
+
+        sf::FloatRect textBounds = bossNameText.getLocalBounds();
+
+        bossNameText.setFont(font);
+        bossNameText.setString(bossName);
+        bossNameText.setCharacterSize(24);
+        bossNameText.setFillColor(sf::Color::White);
+
+        UpdateHPBarText();
+    }
+    void UpdateHPBarText()
+    {
+        float ratio = health / maxHealth;
+        hpFront.setSize(sf::Vector2f(hpBack.getSize().x * ratio, hpBack.getSize().y));
+
+        hpText.setString(std::to_string(static_cast<int>(health)) + "/" + std::to_string(static_cast<int>(maxHealth)));
+
+        // Canh giữa thanh
+        sf::FloatRect textRect = hpText.getLocalBounds();
+        hpText.setOrigin(textRect.left + textRect.width / 2.f, textRect.top + textRect.height / 2.f);
+
+        hpText.setPosition(
+            hpBack.getPosition().x + hpBack.getSize().x,
+            hpBack.getPosition().y + hpBack.getSize().y / 2.f - 1.f
+        );
+    }
 };

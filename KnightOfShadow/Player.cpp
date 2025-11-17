@@ -20,7 +20,7 @@ Player::Player(sf::Texture& texIdle, sf::Texture& texWalk,
 
 {
     // Load âm thanh 
-    dashBuffer.loadFromFile("Assets/Sound effect/Player/dash.ogg");
+    dashBuffer.loadFromFile("Assets/Sound effect/Player/dash1.ogg");
     dashSound.setBuffer(dashBuffer);
     dashSound.setPitch(1.7f);
     dashSound.setVolume(7.f);
@@ -47,12 +47,13 @@ Player::Player(sf::Texture& texIdle, sf::Texture& texWalk,
     sprite.setScale(1.f, 1.f);
 
     //======================HP BAR======================
+    font.loadFromFile("Assets/Font/fontTitle.TTF");
     avatarTex.loadFromFile("Assets/Images/Player/avatar.png"); // hình đại diện player
     avatarSprite.setTexture(avatarTex);
     avatarSprite.setScale(0.5f, 0.5f); // tuỳ chỉnh size
     avatarSprite.setPosition(1.f, 10.f); // góc trái màn hình
 
-    maxHealth = 5000.f;
+    maxHealth = 300.f;
     health = maxHealth;
 
     // Nền
@@ -74,39 +75,41 @@ void Player::HandleInput(float deltaTime)
     bool moving = false;
 
     float moveSpeed = 250.f;
-    bool leftClick = sf::Keyboard::isKeyPressed(sf::Keyboard::X);
+    bool leftClick = sf::Keyboard::isKeyPressed(sf::Keyboard::J);
 
     if (dashCooldownTimer > 0)
         dashCooldownTimer -= deltaTime;
 
     // Nhấn Z để dash (nếu chưa dash và cooldown xong)
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z) && !isDashing && dashCooldownTimer <= 0.f)
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && !isDashing && dashCooldownTimer <= 0.f)
     {
         isDashing = true;
         dashTime = dashDuration;
         dashCooldownTimer = dashCooldown;
         dashSound.play();
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::I)
+        && skill1CooldownTimer <= 0.f
         && state != Skill1
         && state != Attacking1 && state != Attacking2 && state != Attacking3)
     {
         ChangeState(Skill1);
+        skill1CooldownTimer = skill1Cooldown;
     }
     // Chỉ cho di chuyển khi không tấn công
     if (state != Attacking1 && state != Attacking2 && state != Attacking3 && state != Skill1)
     {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
             velocity.x = -moveSpeed;
             facingRight = false;
             moving = true;
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
             velocity.x = +moveSpeed;
             facingRight = true;
             moving = true;
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::C) && isOnGround)
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::K) && isOnGround)
         {
             velocity.y = jumpStrength;
             jumpSound.play();
@@ -157,6 +160,10 @@ void Player::Update(float deltaTime)
             ChangeState(Idle);
         }
     }
+
+    if (skill1CooldownTimer > 0.f)
+        skill1CooldownTimer -= deltaTime;
+
     for (auto& t : dashTrails)
     {
         t.alpha -= 1000.f * deltaTime;
@@ -353,18 +360,35 @@ void Player::Draw(sf::RenderWindow& window)
 
     // Vẽ thanh máu
     sf::RectangleShape backBar;
-    backBar.setSize({ 250.f, 15.f }); // size thanh máu
+    backBar.setSize({ 250.f, 20.f }); // size thanh máu
     backBar.setFillColor(sf::Color(100, 100, 100)); // nền xám
+    backBar.setOutlineColor(sf::Color::Black);       // viền trắng
+    backBar.setOutlineThickness(3.f);
     backBar.setPosition(avatarSprite.getPosition().x + avatarSprite.getGlobalBounds().width - 7.f,
         avatarSprite.getPosition().y + 28.f);
     window.draw(backBar);
 
     sf::RectangleShape frontBar;
     float hpRatio = health / maxHealth;
-    frontBar.setSize({ 250.f * hpRatio, 15.f }); // scale theo HP
+    frontBar.setSize({ 250.f * hpRatio, 20.f }); // scale theo HP
     frontBar.setFillColor(sf::Color::Red);
     frontBar.setPosition(backBar.getPosition());
     window.draw(frontBar);
+
+    // 3. Vẽ số máu lên giữa thanh
+    sf::Text hpText;
+    hpText.setFont(font);
+    hpText.setCharacterSize(20); // size chữ
+    hpText.setFillColor(sf::Color::White);
+    hpText.setString(std::to_string(static_cast<int>(health)) + "/" + std::to_string(static_cast<int>(maxHealth)));
+
+    // Canh giữa thanh HP
+    sf::FloatRect textRect = hpText.getLocalBounds();
+    hpText.setOrigin(textRect.left + textRect.width / 2.f, textRect.top + textRect.height / 2.f);
+    hpText.setPosition(backBar.getPosition().x + backBar.getSize().x / 2.f,
+        backBar.getPosition().y + backBar.getSize().y / 2.f - 1.f); // -1 để hơi chính giữa
+
+    window.draw(hpText);
 
     //if (state == Attacking1 || state == Attacking2 || state == Attacking3)
     //{
