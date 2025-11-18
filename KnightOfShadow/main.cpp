@@ -49,6 +49,26 @@ int main() {
 
     sf::Clock clock;
 
+    // === Bảng hướng dẫn cho map 0 ===
+    sf::Font tutorialFont;
+    tutorialFont.loadFromFile("Assets/Font/fontTutorial.ttf");
+
+    sf::Text tutorialText;
+    tutorialText.setFont(tutorialFont);
+    tutorialText.setCharacterSize(28);
+    tutorialText.setFillColor(sf::Color(255, 220, 50));
+    tutorialText.setOutlineThickness(2);
+    tutorialText.setOutlineColor(sf::Color::Black);
+
+    tutorialText.setString(
+        "GAME TUTORIAL:\n"
+        "- A / D = Move\n"
+        "- SHIFT = Dash\n"
+        "- J = Hit\n"
+        "- K = Jump\n"
+    );
+    tutorialText.setPosition(100.f, 100.f);
+
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -202,6 +222,10 @@ int main() {
 
             // --- Vẽ ---
             map.Draw(window);
+            // === Hiện hướng dẫn nếu đang ở map 0 ===
+            if (currentLevel == 0) {
+                window.draw(tutorialText);
+            }
             player.Draw(window);
             enemyManager.DrawAll(window);
 
