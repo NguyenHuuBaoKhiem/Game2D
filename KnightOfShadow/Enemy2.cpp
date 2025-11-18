@@ -171,7 +171,7 @@ void Enemy2::Draw(sf::RenderWindow& window)
     window.draw(hpText);
     window.draw(bossNameText);
 
-    /*if (state == EnemyState::Attacking && hitboxActive)
+   /* if (state == EnemyState::Attacking && hitboxActive)
     {
         sf::RectangleShape atkBoxShape;
         atkBoxShape.setPosition(currentAttackBox.left, currentAttackBox.top);
@@ -180,9 +180,9 @@ void Enemy2::Draw(sf::RenderWindow& window)
         atkBoxShape.setOutlineColor(sf::Color::Yellow);
         atkBoxShape.setOutlineThickness(1.f);
         window.draw(atkBoxShape);
-    }
+    }*/
 
-    sf::RectangleShape bodyBox;
+   /* sf::RectangleShape bodyBox;
     bodyBox.setPosition(bodyHitbox.left, bodyHitbox.top);
     bodyBox.setSize({ bodyHitbox.width, bodyHitbox.height });
     bodyBox.setFillColor(sf::Color(255, 0, 0, 40));

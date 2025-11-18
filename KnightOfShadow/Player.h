@@ -60,7 +60,7 @@ private:
 
     bool isOnGround = true;
     float gravity = 900.f;      // lực hấp dẫn
-    float jumpStrength = -500.f; // lực nhảy (âm vì hướng lên trên)
+    float jumpStrength = -550.f; // lực nhảy (âm vì hướng lên trên)
     float groundY = 655.f; // y = vị trí mặt đất
 
     // Dash variables
@@ -135,6 +135,10 @@ public:
             std::cout << "Player da chet!\n";
         }
     }
+
+    // --- KHAI BÁO HÀM HỒI MÁU ---
+    void SetHP(float value);
+    // ----------------------------
 
     void UpdateHitCooldown(float dt) {
         if (recentlyHit) {

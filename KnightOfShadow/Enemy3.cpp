@@ -25,9 +25,6 @@ Enemy3::Enemy3(sf::Texture& texIdle, sf::Texture& texWalk, sf::Texture& texAttac
     currentAttackBox = sf::FloatRect();
     bodyHitbox = sf::FloatRect();
 
-    //Load âm thanh
-    tele_buffer.loadFromFile("Assets/Sound effect/Enemy/Boss1/at.mp3");
-
     maxHealth = 3000.f;   // ví dụ máu boss 2
     health = maxHealth;
 
@@ -239,19 +236,19 @@ void Enemy3::Update(float deltaTime)
         {
         case Boss3AttackType::Attack:
         {
-            attackBox.width = 250.f;
-            attackBox.height = 250.f;
-            attackBox.top = enemyY - 150.f;
+            attackBox.width = 220.f;
+            attackBox.height = 130.f;
+            attackBox.top = enemyY - 65.f;
             if (facingRight)
-                attackBox.left = enemyX - 30.f;
+                attackBox.left = enemyX - 50.f;
             else
                 attackBox.left = enemyX - attackBox.width + 30.f;
 
             break;
         }
         case Boss3AttackType::Attack1:
-            attackBox.width = 800.f; attackBox.height = 250.f;
-            attackBox.top = enemyY - 130.f;
+            attackBox.width = 800.f; attackBox.height = 120.f;
+            attackBox.top = enemyY - 50.f;
             attackBox.left = enemyX - attackBox.width / 2.f;
             break;
         case Boss3AttackType::Attack2:
@@ -285,7 +282,7 @@ void Enemy3::Update(float deltaTime)
         currentAttackBox = sf::FloatRect();
 
     // Hitbox thân
-    bodyHitbox.width = 100.f;
+    bodyHitbox.width = 150.f;
     bodyHitbox.height = 250.f;
     bodyOffset = sf::Vector2f(-bodyHitbox.width / 2.f, -bodyHitbox.height / 2.f);
     sf::Vector2f pos = sprite.getPosition();
@@ -384,42 +381,42 @@ void Enemy3::Draw(sf::RenderWindow& window)
     window.draw(hpText);
     window.draw(bossNameText);
 
-    //if (state == EnemyState::Attacking && hitboxActive)
-    //{
-    //    sf::RectangleShape atkBoxShape;
-    //    atkBoxShape.setPosition(currentAttackBox.left, currentAttackBox.top);
-    //    atkBoxShape.setSize({ currentAttackBox.width, currentAttackBox.height });
-    //    atkBoxShape.setFillColor(sf::Color(255, 255, 0, 60));
-    //    atkBoxShape.setOutlineColor(sf::Color::Yellow);
-    //    atkBoxShape.setOutlineThickness(1.f);
-    //    window.draw(atkBoxShape);
+  /*  if (state == EnemyState::Attacking && hitboxActive)
+    {
+        sf::RectangleShape atkBoxShape;
+        atkBoxShape.setPosition(currentAttackBox.left, currentAttackBox.top);
+        atkBoxShape.setSize({ currentAttackBox.width, currentAttackBox.height });
+        atkBoxShape.setFillColor(sf::Color(255, 255, 0, 60));
+        atkBoxShape.setOutlineColor(sf::Color::Yellow);
+        atkBoxShape.setOutlineThickness(1.f);
+        window.draw(atkBoxShape);*/
 
-    //    if (attackType == Boss3AttackType::Attack2)
-    //    {
-    //        auto drawSafeZone = [&](const sf::FloatRect& zone)
-    //            {
-    //                sf::RectangleShape shape;
-    //                shape.setPosition(zone.left, zone.top);
-    //                shape.setSize({ zone.width, zone.height });
-    //                shape.setFillColor(sf::Color(0, 255, 0, 60)); // xanh mờ
-    //                shape.setOutlineColor(sf::Color::Green);
-    //                shape.setOutlineThickness(1.f);
-    //                window.draw(shape);
-    //            };
+        //if (attackType == Boss3AttackType::Attack2)
+        //{
+        //    auto drawSafeZone = [&](const sf::FloatRect& zone)
+        //        {
+        //            sf::RectangleShape shape;
+        //            shape.setPosition(zone.left, zone.top);
+        //            shape.setSize({ zone.width, zone.height });
+        //            shape.setFillColor(sf::Color(0, 255, 0, 60)); // xanh mờ
+        //            shape.setOutlineColor(sf::Color::Green);
+        //            shape.setOutlineThickness(1.f);
+        //            window.draw(shape);
+        //        };
 
     //        drawSafeZone(safeZoneLeft);
     //        drawSafeZone(safeZoneRight);
     //    }
     //}
 
-    //// Hitbox thân
-    //sf::RectangleShape bodyBox;
-    //bodyBox.setPosition(bodyHitbox.left, bodyHitbox.top);
-    //bodyBox.setSize({ bodyHitbox.width, bodyHitbox.height });
-    //bodyBox.setFillColor(sf::Color(255, 0, 0, 40));
-    //bodyBox.setOutlineColor(sf::Color::Red);
-    //bodyBox.setOutlineThickness(1.f);
-    //window.draw(bodyBox);
+    // Hitbox thân
+  /*  sf::RectangleShape bodyBox;
+    bodyBox.setPosition(bodyHitbox.left, bodyHitbox.top);
+    bodyBox.setSize({ bodyHitbox.width, bodyHitbox.height });
+    bodyBox.setFillColor(sf::Color(255, 0, 0, 40));
+    bodyBox.setOutlineColor(sf::Color::Red);
+    bodyBox.setOutlineThickness(1.f);
+    window.draw(bodyBox);*/
 }
 
 void Enemy3::ChangeState(EnemyState newState)

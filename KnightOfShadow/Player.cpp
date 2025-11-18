@@ -81,14 +81,14 @@ void Player::HandleInput(float deltaTime)
         dashCooldownTimer -= deltaTime;
 
     // Nhấn Z để dash (nếu chưa dash và cooldown xong)
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) && !isDashing && dashCooldownTimer <= 0.f)
+    if ((sf::Keyboard::isKeyPressed(sf::Keyboard::L) || (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)))&& !isDashing && dashCooldownTimer <= 0.f)
     {
         isDashing = true;
         dashTime = dashDuration;
         dashCooldownTimer = dashCooldown;
         dashSound.play();
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::I)
+    if ((sf::Keyboard::isKeyPressed(sf::Keyboard::I) || (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)))
         && skill1CooldownTimer <= 0.f
         && state != Skill1
         && state != Attacking1 && state != Attacking2 && state != Attacking3)
@@ -109,7 +109,7 @@ void Player::HandleInput(float deltaTime)
             facingRight = true;
             moving = true;
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::K) && isOnGround)
+        if ((sf::Keyboard::isKeyPressed(sf::Keyboard::K) || (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))) && isOnGround)
         {
             velocity.y = jumpStrength;
             jumpSound.play();
@@ -485,3 +485,20 @@ void Player::ChangeState(PlayerState newState)
 sf::Sprite& Player::GetSprite() { return sprite; }
 sf::Vector2f Player::GetPosition() const { return sprite.getPosition(); }
 void Player::SetPosition(const sf::Vector2f& pos) { sprite.setPosition(pos); }
+
+// === CÀI ĐẶT HÀM SETHP TẠI ĐÂY ===
+void Player::SetHP(float value) {
+    health = value;
+    // Giới hạn máu không quá Max
+    if (health > maxHealth) health = maxHealth;
+
+    // Reset các cờ chết và bị đánh
+    isDead = false;
+    recentlyHit = false;
+
+    // Đưa về trạng thái Idle để thoát khỏi animation chết
+    ChangeState(Idle);
+
+    // Cập nhật lại thanh máu
+    UpdateHPBar();
+}

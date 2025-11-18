@@ -41,8 +41,8 @@ private:
     float attackActiveTime_Attack = 0.5f;
     float attackDuration_Attack = 3.5f;
 
-    float attackActiveTime_Attack1 = 0.5f;  // hitbox hiện ra
-    float attackDuration_Attack1 = 1.f;     // thời gian hitbox tồn tại
+    float attackActiveTime_Attack1 = 0.7f;  // hitbox hiện ra
+    float attackDuration_Attack1 = 0.85f;     // thời gian hitbox tồn tại
 
     float attackActiveTime_Attack2 = 0.7f;
     float attackDuration_Attack2 = 2.0f;
@@ -53,7 +53,6 @@ private:
     bool isTeleOut = false;      // animation teleport-out
     bool isTeleIn = false;       // animation teleport-in
     float teleTimer = 0.f;       // timer của teleport
-    float teleCooldown = 1.f;    // cooldown skill
     float teleDuration = 0.f;   // thời gian animation teleport nếu muốn
     sf::Vector2f teleTarget;     // vị trí sau teleport
 

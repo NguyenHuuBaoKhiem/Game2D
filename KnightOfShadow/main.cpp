@@ -14,7 +14,7 @@
 #include <string>
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(1600, 896), "Game", sf::Style::Close);
+    sf::RenderWindow window(sf::VideoMode(1600, 896), "KoS", sf::Style::Close);
     window.setFramerateLimit(60);
 
     // --- MAP ---
@@ -79,12 +79,13 @@ int main() {
     // Trả lại định dạng xuống dòng như cũ
     tutorialText.setString(
         "GAME TUTORIAL:\n"
-        "- A / D      : Move\n"
-        "- LSHIFT   : Dash\n"
+        "- A / D        : Move\n"
+        "- L / LSHIFT   : Dash\n"
         "- J            : Hit\n"
-        "- K           : Jump"
+        "- K / SPACE    : Jump\n"
+        "- I / Q        : Skill"
     );
-    tutorialText.setPosition(50.f, 100.f);
+    tutorialText.setPosition(50.f, 80.f);
 
     bool needReset = false;
     bool isVictory = false;
@@ -150,7 +151,12 @@ int main() {
             if (!pauseMenu.IsPaused() && !player.IsDead() && !isVictory) {
                 if (!mapMusicStarted) {
                     mapMusicStarted = true;
-                    if (!musicPaths[currentLevel].empty()) { bgMusic.openFromFile(musicPaths[currentLevel]); bgMusic.play(); bgMusic.setLoop(true); }
+                    if (!musicPaths[currentLevel].empty()) { 
+                        bgMusic.openFromFile(musicPaths[currentLevel]);
+                        bgMusic.setVolume(30.f);
+                        bgMusic.play();
+                        bgMusic.setLoop(true);
+                    }
                 }
 
                 player.HandleInput(deltaTime);
@@ -177,14 +183,28 @@ int main() {
 
                 // Collision
                 for (const auto& e : enemyManager.GetEnemies()) {
-                    if ((player.GetState() == Attacking1 || player.GetState() == Attacking2 || player.GetState() == Attacking3)
-                        && player.GetAttackBox().intersects(e->GetBodyHitbox())) e->TakeDamage(20);
-                    if (player.GetState() == Skill1 && player.GetSkill1Hitbox().intersects(e->GetBodyHitbox())) e->TakeDamage(50);
-
+                    if ((player.GetState() == Attacking1 ||
+                        player.GetState() == Attacking2 ||
+                        player.GetState() == Attacking3) &&
+                        player.GetAttackBox().intersects(e->GetBodyHitbox()))
+                    {
+                        e->TakeDamage(20);
+                    }
+                    if (player.GetState() == Skill1 &&
+                        player.GetSkill1Hitbox().intersects(e->GetBodyHitbox()))
+                    {
+                        e->TakeDamage(50);
+                    }
                     if (e->IsAttacking() && e->GetAttackBox().intersects(player.GetBodyHitbox())) {
                         bool inSafe = false;
-                        if (currentLevel == 3) { for (auto& z : e->GetSafeZones()) if (z.intersects(player.GetBodyHitbox())) inSafe = true; }
-                        if (!inSafe) player.TakeDamage(15);
+                        if (currentLevel == 3)
+                        { 
+                            for (auto& z : e->GetSafeZones())
+                                if (z.intersects(player.GetBodyHitbox()))
+                                    inSafe = true;
+                        }
+                        if (!inSafe)
+                            player.TakeDamage(15);
                     }
                 }
 
@@ -208,19 +228,45 @@ int main() {
                                     // Spawn Boss
                                     if (currentLevel == 1) {
                                         static sf::Texture tI, tW, tA, tD;
-                                        static bool l = false; if (!l) { tI.loadFromFile("Assets/Images/Enemy/idle_1.png"); tW.loadFromFile("Assets/Images/Enemy/walk_1.png"); tA.loadFromFile("Assets/Images/Enemy/attack_1.png"); tD.loadFromFile("Assets/Images/Enemy/death_1.png"); l = true; }
+                                        static bool l = false;
+                                        if (!l) { 
+                                            tI.loadFromFile("Assets/Images/Enemy/idle_1.png");
+                                            tW.loadFromFile("Assets/Images/Enemy/walk_1.png");
+                                            tA.loadFromFile("Assets/Images/Enemy/attack_1.png");
+                                            tD.loadFromFile("Assets/Images/Enemy/death_1.png");
+                                            l = true;
+                                        }
                                         enemyManager.AddEnemy(std::make_unique<Enemy2>(tI, tW, tA, tD));
                                         enemyManager.GetEnemies().back()->SetPosition({ 1000.f, 610.f });
                                     }
                                     else if (currentLevel == 2) {
                                         static sf::Texture tI, tW, tA, tA1, tA2, tD;
-                                        static bool l = false; if (!l) { tI.loadFromFile("Assets/Images/Enemy/idle.png"); tW.loadFromFile("Assets/Images/Enemy/walk.png"); tA.loadFromFile("Assets/Images/Enemy/attack.png"); tA1.loadFromFile("Assets/Images/Enemy/at1.png"); tA2.loadFromFile("Assets/Images/Enemy/at2.png"); tD.loadFromFile("Assets/Images/Enemy/death.png"); l = true; }
+                                        static bool l = false;
+                                        if (!l) { 
+                                            tI.loadFromFile("Assets/Images/Enemy/idle.png");
+                                            tW.loadFromFile("Assets/Images/Enemy/walk.png");
+                                            tA.loadFromFile("Assets/Images/Enemy/attack.png");
+                                            tA1.loadFromFile("Assets/Images/Enemy/at1.png");
+                                            tA2.loadFromFile("Assets/Images/Enemy/at2.png");
+                                            tD.loadFromFile("Assets/Images/Enemy/death.png");
+                                            l = true;
+                                        }
                                         enemyManager.AddEnemy(std::make_unique<Enemy1>(tI, tW, tA, tA1, tA2, tD));
                                         enemyManager.GetEnemies().back()->SetPosition({ 1000.f, 550.f });
                                     }
                                     else if (currentLevel == 3) {
                                         static sf::Texture tI, tW, tA, tA1, tA2, tT, tD;
-                                        static bool l = false; if (!l) { tI.loadFromFile("Assets/Images/Enemy/idle_2.png"); tW.loadFromFile("Assets/Images/Enemy/walk_2.png"); tA.loadFromFile("Assets/Images/Enemy/attack_2.png"); tA1.loadFromFile("Assets/Images/Enemy/at1_2.png"); tA2.loadFromFile("Assets/Images/Enemy/at2_2.png"); tT.loadFromFile("Assets/Images/Enemy/tele.png"); tD.loadFromFile("Assets/Images/Enemy/death_2.png"); l = true; }
+                                        static bool l = false;
+                                        if (!l) {
+                                            tI.loadFromFile("Assets/Images/Enemy/idle_2.png");
+                                            tW.loadFromFile("Assets/Images/Enemy/walk_2.png");
+                                            tA.loadFromFile("Assets/Images/Enemy/attack_2.png");
+                                            tA1.loadFromFile("Assets/Images/Enemy/at1_2.png");
+                                            tA2.loadFromFile("Assets/Images/Enemy/at2_2.png");
+                                            tT.loadFromFile("Assets/Images/Enemy/tele.png");
+                                            tD.loadFromFile("Assets/Images/Enemy/death_2.png");
+                                            l = true;
+                                        }
                                         enemyManager.AddEnemy(std::make_unique<Enemy3>(tI, tW, tA, tA1, tA2, tT, tD));
                                         enemyManager.GetEnemies().back()->SetPosition({ 830.f, 380.f });
                                     }

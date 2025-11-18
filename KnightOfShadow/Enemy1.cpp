@@ -301,14 +301,14 @@ void Enemy1::Draw(sf::RenderWindow& window)
         window.draw(atkBoxShape);
     }*/
 
-    //// Hitbox thân
-    //sf::RectangleShape bodyBox;
-    //bodyBox.setPosition(bodyHitbox.left, bodyHitbox.top);
-    //bodyBox.setSize({ bodyHitbox.width, bodyHitbox.height });
-    //bodyBox.setFillColor(sf::Color(255, 0, 0, 40));
-    //bodyBox.setOutlineColor(sf::Color::Red);
-    //bodyBox.setOutlineThickness(1.f);
-    //window.draw(bodyBox);
+    // Hitbox thân
+   /* sf::RectangleShape bodyBox;
+    bodyBox.setPosition(bodyHitbox.left, bodyHitbox.top);
+    bodyBox.setSize({ bodyHitbox.width, bodyHitbox.height });
+    bodyBox.setFillColor(sf::Color(255, 0, 0, 40));
+    bodyBox.setOutlineColor(sf::Color::Red);
+    bodyBox.setOutlineThickness(1.f);
+    window.draw(bodyBox);*/
 }
 
 void Enemy1::ChangeState(EnemyState newState)
