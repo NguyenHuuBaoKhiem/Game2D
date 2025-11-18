@@ -63,7 +63,7 @@ int main() {
     tutorialText.setString(
         "GAME TUTORIAL:\n"
         "- A / D = Move\n"
-        "- SHIFT = Dash\n"
+        "- LSHIFT = Dash\n"
         "- J = Hit\n"
         "- K = Jump\n"
     );
