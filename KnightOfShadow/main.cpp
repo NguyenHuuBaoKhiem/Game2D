@@ -6,6 +6,10 @@
 #include "EnemyManager.h"
 #include "MenuScreen.h"
 #include "Map.h"
+#include "PauseMenu.h"
+#include "GameOverScreen.h"
+#include "WinScreen.h"
+#include "ScoreManager.h" 
 #include <vector>
 #include <string>
 
@@ -22,224 +26,251 @@ int main() {
     sf::Music bgMusic;
     bool mapMusicStarted = false;
     std::vector<std::string> musicPaths = {
-        "Assets/Music/intro.mp3",
-        "Assets/Music/boss2.mp3",
-        "Assets/Music/boss22.mp3",
-        "Assets/Music/boss3.mp3"
+        "Assets/Music/intro.mp3", "Assets/Music/boss2.mp3",
+        "Assets/Music/boss22.mp3", "Assets/Music/boss3.mp3"
     };
 
     // --- PLAYER ---
-    sf::Texture texIdle, texWalk, texAttack1, texAttack2, texAttack3, texSkill1, texDeath;
-    texWalk.loadFromFile("Assets/Images/Player/run.png");
-    texIdle.loadFromFile("Assets/Images/Player/idle.png");
-    texAttack1.loadFromFile("Assets/Images/Player/at1.png");
-    texAttack2.loadFromFile("Assets/Images/Player/at2.png");
-    texAttack3.loadFromFile("Assets/Images/Player/at3.png");
-    texSkill1.loadFromFile("Assets/Images/Player/skill1.png");
-    texDeath.loadFromFile("Assets/Images/Player/death.png");
-
-    Player player(texIdle, texWalk, texAttack1, texAttack2, texAttack3, texSkill1, texDeath);
+    sf::Texture t1, t2, t3, t4, t5, t6, t7;
+    t1.loadFromFile("Assets/Images/Player/idle.png");
+    t2.loadFromFile("Assets/Images/Player/run.png");
+    t3.loadFromFile("Assets/Images/Player/at1.png");
+    t4.loadFromFile("Assets/Images/Player/at2.png");
+    t5.loadFromFile("Assets/Images/Player/at3.png");
+    t6.loadFromFile("Assets/Images/Player/skill1.png");
+    t7.loadFromFile("Assets/Images/Player/death.png");
+    Player player(t1, t2, t3, t4, t5, t6, t7);
     player.SetPosition({ 200.f, 655.f });
 
-    // --- ENEMY MANAGER ---
+    // --- MANAGERS ---
     EnemyManager enemyManager;
+    ScoreManager scoreManager;
 
-    // --- MENU ---
     MenuScreen menu(window);
+    PauseMenu pauseMenu(window);
+    GameOverScreen gameOverScreen(1600, 896);
+    WinScreen winScreen(1600, 896);
+
+    // --- FONT CHUNG ---
+    sf::Font fontUI;
+    if (!fontUI.loadFromFile("Assets/Font/fontTutorial.ttf")) {
+        // Xử lý nếu không load được font
+    }
+
+    // --- UI ĐIỂM SỐ TRONG GAME (HUD) ---
+    sf::Text scoreTextHUD;
+    scoreTextHUD.setFont(fontUI);
+    scoreTextHUD.setCharacterSize(30);
+    scoreTextHUD.setFillColor(sf::Color::Yellow);
+    scoreTextHUD.setOutlineThickness(2);
+    scoreTextHUD.setOutlineColor(sf::Color::Black);
+    scoreTextHUD.setPosition(1350.f, 30.f); // Góc phải trên
 
     sf::Clock clock;
 
-    // === Bảng hướng dẫn cho map 0 ===
-    sf::Font tutorialFont;
-    tutorialFont.loadFromFile("Assets/Font/fontTutorial.ttf");
-
+    // --- TUTORIAL TEXT (Đã sửa lại định dạng đẹp) ---
     sf::Text tutorialText;
-    tutorialText.setFont(tutorialFont);
+    tutorialText.setFont(fontUI);
     tutorialText.setCharacterSize(28);
-    tutorialText.setFillColor(sf::Color(255, 220, 50));
+    tutorialText.setFillColor(sf::Color(255, 220, 50)); // Màu vàng
     tutorialText.setOutlineThickness(2);
     tutorialText.setOutlineColor(sf::Color::Black);
 
+    // Trả lại định dạng xuống dòng như cũ
     tutorialText.setString(
         "GAME TUTORIAL:\n"
-        "- A / D = Move\n"
-        "- LSHIFT = Dash\n"
-        "- J = Hit\n"
-        "- K = Jump\n"
+        "- A / D      : Move\n"
+        "- LSHIFT   : Dash\n"
+        "- J            : Hit\n"
+        "- K           : Jump"
     );
-    tutorialText.setPosition(100.f, 100.f);
+    tutorialText.setPosition(50.f, 100.f);
+
+    bool needReset = false;
+    bool isVictory = false;
+    bool scoreSaved = false;
+
+    // Biến theo dõi số lượng quái để tính điểm
+    int previousEnemyCount = 0;
 
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
-                window.close();
+            if (event.type == sf::Event::Closed) window.close();
 
-            if (menu.isActive && event.type == sf::Event::KeyPressed)
-                menu.isFadingOut = true;
+            if (menu.isActive) {
+                if (event.type == sf::Event::KeyPressed) menu.isFadingOut = true;
+            }
+            else {
+                if (isVictory) {
+                    if (winScreen.HandleInput(window, event)) needReset = true;
+                }
+                else if (player.IsDead()) {
+                    if (gameOverScreen.HandleInput(window, event)) needReset = true;
+                }
+                else {
+                    PauseMenu::ButtonResult action = pauseMenu.HandleInput(event, window);
+                    if (action == PauseMenu::Reset) needReset = true;
+                }
+            }
+        }
+
+        // --- RESET GAME ---
+        if (needReset) {
+            currentLevel = 0;
+            map.Load("Assets/Images/Map/Map.ldtk", levelNames[currentLevel]);
+            player.SetPosition({ 200.f, 655.f });
+            player.SetHP(300);
+            enemyManager = EnemyManager();
+
+            mapMusicStarted = false;
+            bgMusic.stop();
+            menu.ResetFade();
+
+            isVictory = false;
+            scoreSaved = false;
+            scoreManager.ResetCurrentScore();
+
+            previousEnemyCount = 0;
+
+            needReset = false;
         }
 
         float deltaTime = clock.restart().asSeconds();
         window.clear(sf::Color(70, 100, 150));
 
-        // --- MENU ---
         if (menu.isActive) {
             menu.Update(deltaTime, window);
             menu.Draw(window);
         }
         else {
-            // --- GAME ---
-            if (!mapMusicStarted) {
-                mapMusicStarted = true;
-                if (!musicPaths[currentLevel].empty() && bgMusic.openFromFile(musicPaths[currentLevel])) {
-                    bgMusic.setLoop(true);
-                    bgMusic.setVolume(20.f);
-                    bgMusic.play();
+            scoreTextHUD.setString("SCORE: " + std::to_string(scoreManager.GetCurrentScore()));
+
+            // --- LOGIC GAME LOOP ---
+            if (!pauseMenu.IsPaused() && !player.IsDead() && !isVictory) {
+                if (!mapMusicStarted) {
+                    mapMusicStarted = true;
+                    if (!musicPaths[currentLevel].empty()) { bgMusic.openFromFile(musicPaths[currentLevel]); bgMusic.play(); bgMusic.setLoop(true); }
                 }
-            }
 
-            // Cập nhật Player
-            player.HandleInput(deltaTime);
-            player.Update(deltaTime);
+                player.HandleInput(deltaTime);
+                player.Update(deltaTime);
+                sf::Vector2f pos = player.GetPosition();
+                if (pos.x < 50) pos.x = 50; if (pos.x > 1550) pos.x = 1550;
+                player.SetPosition(pos);
 
-            // Giới hạn biên map
-            sf::Vector2f pos = player.GetPosition();
-            if (pos.x < 50.f) pos.x = 50.f;
-            if (pos.x > 1550.f) pos.x = 1550.f;
-            player.SetPosition(pos);
+                enemyManager.UpdateAll(deltaTime, player.GetPosition());
 
-            sf::Vector2f playerPos = player.GetPosition();
-
-            // Cập nhật Boss
-            enemyManager.UpdateAll(deltaTime, playerPos);
-            enemyManager.RemoveDeadEnemies();
-
-            // Va chạm Player → Boss
-            for (const auto& e : enemyManager.GetEnemies()) {
-                if ((player.GetState() == PlayerState::Attacking1 ||
-                    player.GetState() == PlayerState::Attacking2 ||
-                    player.GetState() == PlayerState::Attacking3) &&
-                    player.GetAttackBox().intersects(e->GetBodyHitbox()))
-                {
-                    e->TakeDamage(20);
+                // --- LOGIC TÍNH ĐIỂM ---
+                int currentLivingEnemies = 0;
+                for (const auto& e : enemyManager.GetEnemies()) {
+                    if (!e->IsDead()) currentLivingEnemies++;
                 }
-                if (player.GetState() == PlayerState::Skill1 &&
-                    player.GetSkill1Hitbox().intersects(e->GetBodyHitbox()))
-                {
-                    e->TakeDamage(50);
-                }
-            }
 
-            // Va chạm Boss → Player
-            for (const auto& e : enemyManager.GetEnemies()) {
-                if (e->IsAttacking() && e->GetAttackBox().intersects(player.GetBodyHitbox())) {
-                    bool inSafe = false;
-                    const auto& safeZones = e->GetSafeZones(); // chỉ Boss3
-                    for (const auto& zone : safeZones) {
-                        if (zone.intersects(player.GetBodyHitbox())) {
-                            inSafe = true;
-                            break;
+                if (currentLivingEnemies < previousEnemyCount) {
+                    int killedCount = previousEnemyCount - currentLivingEnemies;
+                    scoreManager.AddScore(killedCount * 100);
+                }
+                previousEnemyCount = currentLivingEnemies;
+                enemyManager.RemoveDeadEnemies();
+                // -----------------------
+
+                // Collision
+                for (const auto& e : enemyManager.GetEnemies()) {
+                    if ((player.GetState() == Attacking1 || player.GetState() == Attacking2 || player.GetState() == Attacking3)
+                        && player.GetAttackBox().intersects(e->GetBodyHitbox())) e->TakeDamage(20);
+                    if (player.GetState() == Skill1 && player.GetSkill1Hitbox().intersects(e->GetBodyHitbox())) e->TakeDamage(50);
+
+                    if (e->IsAttacking() && e->GetAttackBox().intersects(player.GetBodyHitbox())) {
+                        bool inSafe = false;
+                        if (currentLevel == 3) { for (auto& z : e->GetSafeZones()) if (z.intersects(player.GetBodyHitbox())) inSafe = true; }
+                        if (!inSafe) player.TakeDamage(15);
+                    }
+                }
+
+                // --- CHUYỂN MAP ---
+                bool allDead = (enemyManager.GetEnemies().size() == 0);
+
+                if (pos.x >= 1550.f && (currentLevel == 0 || allDead)) {
+                    if (currentLevel < 3) {
+                        if (!menu.IsMapFadingOut() && !menu.IsMapFadingIn()) {
+                            menu.StartFadeOutMap([&]() {
+                                currentLevel++;
+                                if (currentLevel < levelNames.size()) {
+                                    map.Load("Assets/Images/Map/Map.ldtk", levelNames[currentLevel]);
+                                    player.SetPosition({ 200.f, 650.f });
+
+                                    enemyManager = EnemyManager();
+                                    previousEnemyCount = 0;
+
+                                    mapMusicStarted = false;
+
+                                    // Spawn Boss
+                                    if (currentLevel == 1) {
+                                        static sf::Texture tI, tW, tA, tD;
+                                        static bool l = false; if (!l) { tI.loadFromFile("Assets/Images/Enemy/idle_1.png"); tW.loadFromFile("Assets/Images/Enemy/walk_1.png"); tA.loadFromFile("Assets/Images/Enemy/attack_1.png"); tD.loadFromFile("Assets/Images/Enemy/death_1.png"); l = true; }
+                                        enemyManager.AddEnemy(std::make_unique<Enemy2>(tI, tW, tA, tD));
+                                        enemyManager.GetEnemies().back()->SetPosition({ 1000.f, 610.f });
+                                    }
+                                    else if (currentLevel == 2) {
+                                        static sf::Texture tI, tW, tA, tA1, tA2, tD;
+                                        static bool l = false; if (!l) { tI.loadFromFile("Assets/Images/Enemy/idle.png"); tW.loadFromFile("Assets/Images/Enemy/walk.png"); tA.loadFromFile("Assets/Images/Enemy/attack.png"); tA1.loadFromFile("Assets/Images/Enemy/at1.png"); tA2.loadFromFile("Assets/Images/Enemy/at2.png"); tD.loadFromFile("Assets/Images/Enemy/death.png"); l = true; }
+                                        enemyManager.AddEnemy(std::make_unique<Enemy1>(tI, tW, tA, tA1, tA2, tD));
+                                        enemyManager.GetEnemies().back()->SetPosition({ 1000.f, 550.f });
+                                    }
+                                    else if (currentLevel == 3) {
+                                        static sf::Texture tI, tW, tA, tA1, tA2, tT, tD;
+                                        static bool l = false; if (!l) { tI.loadFromFile("Assets/Images/Enemy/idle_2.png"); tW.loadFromFile("Assets/Images/Enemy/walk_2.png"); tA.loadFromFile("Assets/Images/Enemy/attack_2.png"); tA1.loadFromFile("Assets/Images/Enemy/at1_2.png"); tA2.loadFromFile("Assets/Images/Enemy/at2_2.png"); tT.loadFromFile("Assets/Images/Enemy/tele.png"); tD.loadFromFile("Assets/Images/Enemy/death_2.png"); l = true; }
+                                        enemyManager.AddEnemy(std::make_unique<Enemy3>(tI, tW, tA, tA1, tA2, tT, tD));
+                                        enemyManager.GetEnemies().back()->SetPosition({ 830.f, 380.f });
+                                    }
+                                }
+                                }, 2.5f);
                         }
                     }
-                    if (!inSafe)
-                        player.TakeDamage(15);
                 }
+                menu.UpdateMapFade(deltaTime);
+            }
+            // Logic animation chết cho Player
+            else if (player.IsDead()) player.Update(deltaTime);
+
+            // --- CHECK CHIẾN THẮNG ---
+            if (currentLevel == 3 && enemyManager.GetEnemies().empty() && !isVictory && mapMusicStarted) {
+                isVictory = true;
             }
 
-            // --- Kiểm tra boss chết ---
-            bool allDead = true;
-            for (const auto& e : enemyManager.GetEnemies())
-                if (!e->IsDead()) allDead = false;
-
-            // --- Chuyển map khi đi đến cuối ---
-            if (pos.x >= 1550.f && (currentLevel == 0 || allDead)) {
-                if (!menu.IsMapFadingOut() && !menu.IsMapFadingIn() && currentLevel + 1 < levelNames.size()) {
-                    menu.StartFadeOutMap([&]() {
-                        // Callback khi fade-out xong → load map mới
-                        currentLevel++;
-                        if (currentLevel < levelNames.size()) {
-                            // Load map mới
-                            map.Load("Assets/Images/Map/Map.ldtk", levelNames[currentLevel]);
-                            player.SetPosition({ 200.f, 650.f });
-                            enemyManager = EnemyManager();
-                            mapMusicStarted = false;
-
-                            // Spawn boss theo map mới
-                            if (currentLevel == 1) {
-                                static sf::Texture tIdlee, tWalkk, tAttackk, tDeathh;
-                                static bool loaded = false;
-                                if (!loaded) {
-                                    tIdlee.loadFromFile("Assets/Images/Enemy/idle_1.png");
-                                    tWalkk.loadFromFile("Assets/Images/Enemy/walk_1.png");
-                                    tAttackk.loadFromFile("Assets/Images/Enemy/attack_1.png");
-                                    tDeathh.loadFromFile("Assets/Images/Enemy/death_1.png");
-                                    loaded = true;
-                                }
-                                auto boss = std::make_unique<Enemy2>(tIdlee, tWalkk, tAttackk, tDeathh);
-                                boss->SetPosition({ 1000.f, 610.f });
-                                enemyManager.AddEnemy(std::move(boss));
-                            }
-                            else if (currentLevel == 2) {
-                                static sf::Texture tIdle, tWalk, tAttack, tDeath, tAttack1, tAttack2;
-                                static bool loaded = false;
-                                if (!loaded) {
-                                    tIdle.loadFromFile("Assets/Images/Enemy/idle.png");
-                                    tWalk.loadFromFile("Assets/Images/Enemy/walk.png");
-                                    tAttack.loadFromFile("Assets/Images/Enemy/attack.png");
-                                    tAttack1.loadFromFile("Assets/Images/Enemy/at1.png");
-                                    tAttack2.loadFromFile("Assets/Images/Enemy/at2.png");
-                                    tDeath.loadFromFile("Assets/Images/Enemy/death.png");
-                                    loaded = true;
-                                }
-                                auto boss = std::make_unique<Enemy1>(tIdle, tWalk, tAttack, tAttack1, tAttack2, tDeath);
-                                boss->SetPosition({ 1000.f, 550.f });
-                                enemyManager.AddEnemy(std::move(boss));
-                            }
-                            else if (currentLevel == 3) {
-                                static sf::Texture tIdle3, tWalk3, tAttack3, tAttack13, tAttack23, tTele3, tDeath3;
-                                static bool loaded = false;
-                                if (!loaded) {
-                                    tIdle3.loadFromFile("Assets/Images/Enemy/idle_2.png");
-                                    tWalk3.loadFromFile("Assets/Images/Enemy/walk_2.png");
-                                    tAttack3.loadFromFile("Assets/Images/Enemy/attack_2.png");
-                                    tAttack13.loadFromFile("Assets/Images/Enemy/at1_2.png");
-                                    tAttack23.loadFromFile("Assets/Images/Enemy/at2_2.png");
-                                    tTele3.loadFromFile("Assets/Images/Enemy/tele.png");
-                                    tDeath3.loadFromFile("Assets/Images/Enemy/death_2.png");
-                                    loaded = true;
-                                }
-                                auto boss = std::make_unique<Enemy3>(tIdle3, tWalk3, tAttack3, tAttack13, tAttack23, tTele3, tDeath3);
-                                boss->SetPosition({ 830.f, 380.f });
-                                enemyManager.AddEnemy(std::move(boss));
-                            }
-                        }
-                     },2.5f);
-                }
+            // --- LƯU ĐIỂM ---
+            if ((isVictory || player.IsDead()) && !scoreSaved) {
+                scoreManager.SaveScore();
+                if (isVictory)
+                    winScreen.SetScoreInfo(scoreManager.GetCurrentScore(), scoreManager.GetHighScores());
+                else
+                    gameOverScreen.SetScoreInfo(scoreManager.GetCurrentScore(), scoreManager.GetHighScores());
+                scoreSaved = true;
             }
 
-            // --- Cập nhật fade map ---
-            menu.UpdateMapFade(deltaTime);
-
-            // --- Vẽ ---
+            // --- DRAW ---
             map.Draw(window);
-            // === Hiện hướng dẫn nếu đang ở map 0 ===
-            if (currentLevel == 0) {
-                window.draw(tutorialText);
-            }
+
+            // Chỉ vẽ Tutorial nếu ở Map 0 (Level Intro)
+            if (currentLevel == 0) window.draw(tutorialText);
+
             player.Draw(window);
             enemyManager.DrawAll(window);
-
-            // Vẽ hiệu ứng fade map
             menu.DrawMapFade(window);
+            for (auto& e : enemyManager.GetEnemies()) e->DrawHP(window);
 
-            // Vẽ HP Boss
-            for (const auto& e : enemyManager.GetEnemies())
-                e->DrawHP(window);
+            // Vẽ HUD Score (nếu đang chơi)
+            if (!isVictory && !player.IsDead() && !menu.isActive) {
+                window.draw(scoreTextHUD);
+            }
 
+            // Vẽ màn hình UI (Win/Lose/Pause)
+            if (isVictory) { winScreen.Update(window); winScreen.Draw(window); }
+            else if (player.IsDead()) { gameOverScreen.Update(window); gameOverScreen.Draw(window); }
+            else { pauseMenu.Update(window); pauseMenu.Draw(window); }
         }
-
         window.display();
     }
-
     return 0;
 }

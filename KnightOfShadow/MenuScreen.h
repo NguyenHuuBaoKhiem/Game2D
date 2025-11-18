@@ -92,12 +92,16 @@ public:
     void DrawMapFade(sf::RenderWindow& window) {
         if (isFadingOutMap || isFadingInMap || fadeInDelayTimer > 0.f) {
             sf::RectangleShape rect(sf::Vector2f(static_cast<float>(window.getSize().x),
-                                                 static_cast<float>(window.getSize().y)));
+                static_cast<float>(window.getSize().y)));
             sf::Uint8 alpha = static_cast<sf::Uint8>(mapFadeAlpha);
             rect.setFillColor(sf::Color(0, 0, 0, alpha));
             window.draw(rect);
         }
     }
+
+    // --- KHAI BÁO HÀM XÓA HIỆU ỨNG FADE ---
+    void ResetFade();
+    // --------------------------------------
 
     // --- getters ---
     bool IsMapFadingOut() const { return isFadingOutMap; }

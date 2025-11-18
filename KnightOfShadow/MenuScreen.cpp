@@ -154,3 +154,17 @@ void MenuScreen::Draw(sf::RenderWindow& window) {
     if (fadeAlpha > 0 || isFadingOut)
         window.draw(fadeRect);
 }
+
+// === CÀI ĐẶT HÀM RESETFADE TẠI ĐÂY ===
+void MenuScreen::ResetFade() {
+    // Đặt lại các cờ về false
+    isFadingOutMap = false;
+    isFadingInMap = false;
+
+    // Xóa màu đen che màn hình
+    mapFadeAlpha = 0.f;
+    fadeInDelayTimer = 0.f;
+
+    // Hủy callback (để game không load map mới khi đang reset)
+    fadeCallback = nullptr;
+}
