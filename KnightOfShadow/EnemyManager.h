@@ -6,6 +6,7 @@
 #include "Enemy1.h"
 #include "Enemy2.h"
 #include "Enemy3.h"
+#include "Player.h"
 
 class EnemyManager {
 private:
@@ -15,7 +16,7 @@ public:
     EnemyManager() = default;
 
     void AddEnemy(std::unique_ptr<BaseEnemy> enemy);
-    void UpdateAll(float deltaTime, const sf::Vector2f& playerPos);
+    void UpdateAll(float deltaTime, const sf::Vector2f& playerPos, const Player& player);
     void DrawAll(sf::RenderWindow& window);
     void RemoveDeadEnemies();
 

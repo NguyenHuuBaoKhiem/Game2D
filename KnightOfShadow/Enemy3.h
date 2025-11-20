@@ -31,8 +31,8 @@ private:
     Boss3AttackType attackType = Boss3AttackType::None;
     // --- Hành vi ---
     float moveSpeed = 200.f;
-    float detectionRange = 570.f;
-    float attackRange = 350.f;
+    float detectionRange = 800.f;
+    float attackRange = 400.f;
 
     float attackCooldown = 0.5f;
     float attackCooldownTimer = 0.f;
@@ -42,7 +42,7 @@ private:
     float attackDuration_Attack = 3.5f;
 
     float attackActiveTime_Attack1 = 0.7f;  // hitbox hiện ra
-    float attackDuration_Attack1 = 0.85f;     // thời gian hitbox tồn tại
+    float attackDuration_Attack1 = 0.8f;     // thời gian hitbox tồn tại
 
     float attackActiveTime_Attack2 = 0.7f;
     float attackDuration_Attack2 = 2.0f;
@@ -84,7 +84,7 @@ public:
         sf::Texture& texDeath);
 
     // === Override ===
-    void HandleInput(float deltaTime, const sf::Vector2f& playerPosition);
+    void HandleInput(float deltaTime, const sf::Vector2f& playerPosition, bool playerIsOnGround);
     void Update(float deltaTime) override;
     void Draw(sf::RenderWindow& window) override;
     void TakeDamage(int damage) override;

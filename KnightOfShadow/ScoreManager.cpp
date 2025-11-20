@@ -41,9 +41,9 @@ void ScoreManager::SaveScore() {
         highScores.push_back(currentScore);
 
         // BUBBLE SORT (Giảm dần)
-        int n = highScores.size();
-        for (int i = 0; i < n - 1; i++) {
-            for (int j = 0; j < n - i - 1; j++) {
+        size_t n = highScores.size();
+        for (size_t i = 0; i < n - 1; i++) {
+            for (size_t j = 0; j < n - i - 1; j++) {
                 if (highScores[j] < highScores[j + 1]) {
                     std::swap(highScores[j], highScores[j + 1]);
                 }
@@ -86,9 +86,9 @@ void ScoreManager::LoadScores() {
             highScores.push_back(score);
         }
 		// BUBBLE SORT (Giảm dần)
-        int n = highScores.size();
-        for (int i = 0; i < n - 1; i++) {
-            for (int j = 0; j < n - i - 1; j++) {
+        size_t n = highScores.size();
+        for (size_t i = 0; i < n - 1; i++) {
+            for (size_t j = 0; j < n - i - 1; j++) {
                 if (highScores[j] < highScores[j + 1]) {
                     std::swap(highScores[j], highScores[j + 1]);
                 }

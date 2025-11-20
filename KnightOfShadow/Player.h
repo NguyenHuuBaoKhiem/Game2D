@@ -149,6 +149,7 @@ public:
             }
         }
     }
+    bool IsOnGround() const { return isOnGround; }
     sf::FloatRect GetBodyHitbox() const { return bodyHitbox; }
     bool IsDead() const { return isDead; }
     float GetHealth() const { return health; }

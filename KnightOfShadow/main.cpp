@@ -165,7 +165,7 @@ int main() {
                 if (pos.x < 50) pos.x = 50; if (pos.x > 1550) pos.x = 1550;
                 player.SetPosition(pos);
 
-                enemyManager.UpdateAll(deltaTime, player.GetPosition());
+                enemyManager.UpdateAll(deltaTime, player.GetPosition(), player);
 
                 // --- LOGIC TÍNH ĐIỂM ---
                 int currentLivingEnemies = 0;
@@ -268,10 +268,10 @@ int main() {
                                             l = true;
                                         }
                                         enemyManager.AddEnemy(std::make_unique<Enemy3>(tI, tW, tA, tA1, tA2, tT, tD));
-                                        enemyManager.GetEnemies().back()->SetPosition({ 830.f, 380.f });
+                                        enemyManager.GetEnemies().back()->SetPosition({ 850.f, 330.f });
                                     }
                                 }
-                                }, 2.5f);
+                                }, 0.5f);
                         }
                     }
                 }
@@ -301,8 +301,8 @@ int main() {
             // Chỉ vẽ Tutorial nếu ở Map 0 (Level Intro)
             if (currentLevel == 0) window.draw(tutorialText);
 
-            player.Draw(window);
             enemyManager.DrawAll(window);
+            player.Draw(window);
             menu.DrawMapFade(window);
             for (auto& e : enemyManager.GetEnemies()) e->DrawHP(window);
 

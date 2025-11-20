@@ -5,7 +5,8 @@ void EnemyManager::AddEnemy(std::unique_ptr<BaseEnemy> enemy) {
     enemies.push_back(std::move(enemy));
 }
 
-void EnemyManager::UpdateAll(float deltaTime, const sf::Vector2f& playerPos) {
+void EnemyManager::UpdateAll(float deltaTime, const sf::Vector2f& playerPos, const Player& player) {
+    bool isPlayerOnGround = player.IsOnGround();
     for (auto& e : enemies) {
         // Nếu là Enemy1 thì gọi HandleInput riêng (để giữ logic cũ)
         if (auto enemy1 = dynamic_cast<Enemy1*>(e.get())) {
@@ -15,7 +16,7 @@ void EnemyManager::UpdateAll(float deltaTime, const sf::Vector2f& playerPos) {
             enemy2->HandleInput(deltaTime, playerPos);
         }
         else if (auto enemy3 = dynamic_cast<Enemy3*>(e.get())) {
-            enemy3->HandleInput(deltaTime, playerPos);
+            enemy3->HandleInput(deltaTime, playerPos, isPlayerOnGround);
         }
         e->Update(deltaTime);
 

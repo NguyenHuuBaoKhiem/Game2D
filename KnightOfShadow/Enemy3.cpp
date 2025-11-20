@@ -33,19 +33,19 @@ Enemy3::Enemy3(sf::Texture& texIdle, sf::Texture& texWalk, sf::Texture& texAttac
     bossNameText.setPosition(hpBack.getPosition().x + 110.f, hpBack.getPosition().y - 35.f);
 }
 
-void Enemy3::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
+void Enemy3::HandleInput(float deltaTime, const sf::Vector2f& playerPosition, bool playerIsOnGround)
 {
     velocity.x = 0.f;
 
     // ==== Nếu chuẩn bị Attack2 thì teleport lên đầu player ====
     if (isTeleportForAttack2)
     {
-        isTeleporting = true;
-        teleTarget = attack2Target;
-        isTeleportForAttack2 = false; // reset
-        teleAnim.Reset();
-        teleTimer = 0.f;
-        return; // ngừng mọi logic khác cho tới khi teleport xong
+        if (!playerIsOnGround) return; // chỉ teleport khi player dưới đất
+            isTeleporting = true;
+            teleTarget = attack2Target;
+            isTeleportForAttack2 = false; // reset
+            teleAnim.Reset();
+            teleTimer = 0.f;
     }
 
 
@@ -63,6 +63,9 @@ void Enemy3::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
 
     sf::Vector2f direction = playerPosition - sprite.getPosition();
     float distance = std::hypot(direction.x, direction.y);
+    float verticalDistance = std::abs(direction.y);
+    const float verticalDetectionRange = 200.f; // boss có thể phát hiện player cao hơn
+    const float verticalAttackRange = 100.f;    // attack vẫn chỉ trong khoảng này
     facingRight = direction.x > 0;
 
     // Kiểm tra cooldown teleport
@@ -71,18 +74,18 @@ void Enemy3::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
 
     if (teleTimer >= currentCooldown && !isTeleporting && state != EnemyState::Attacking)
     {
-        teleTimer = 0.f;
-        justFinishedAttack2 = false; // reset flag
-        isTeleporting = true;
+        if (!playerIsOnGround) return; // chỉ teleport khi player dưới đất
+            teleTimer = 0.f;
+            justFinishedAttack2 = false; // reset flag
+            isTeleporting = true;
 
-        float offsetX = (rand() % 2 == 0 ? -150.f : 150.f);
-        teleTarget = sf::Vector2f(playerPosition.x + offsetX, playerPosition.y);
-        teleAnim.Reset();
-        return;
+            float offsetX = (rand() % 2 == 0 ? -150.f : 150.f);
+            teleTarget = sf::Vector2f(playerPosition.x + offsetX, playerPosition.y);
+            teleAnim.Reset();
     }
 
     // Kiểm tra tấn công
-    if (distance <= attackRange)
+    if (distance <= attackRange && verticalDistance <= 150)
     {
         attackTimer += deltaTime;
 
@@ -92,6 +95,7 @@ void Enemy3::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
             int r = rand() % 100; // số từ 0 -> 99
             if (r < 40)            // 0-49 -> 50%
             {
+                if (!playerIsOnGround) return;
                 attackType = Boss3AttackType::Attack2;
                 isTeleportForAttack2 = true;
                 attack2Target = sf::Vector2f(playerPosition.x, playerPosition.y - 250.f);
@@ -106,7 +110,7 @@ void Enemy3::HandleInput(float deltaTime, const sf::Vector2f& playerPosition)
             attackCooldownTimer = 0.f;
         }
     }
-    else if (distance <= detectionRange)
+    else if (distance <= detectionRange && verticalDistance <= 150)
     {
         ChangeState(EnemyState::Walking);
         if (distance > 0.f)
@@ -283,7 +287,7 @@ void Enemy3::Update(float deltaTime)
 
     // Hitbox thân
     bodyHitbox.width = 150.f;
-    bodyHitbox.height = 250.f;
+    bodyHitbox.height = 200.f;
     bodyOffset = sf::Vector2f(-bodyHitbox.width / 2.f, -bodyHitbox.height / 2.f);
     sf::Vector2f pos = sprite.getPosition();
     bodyHitbox.left = pos.x + bodyOffset.x;
@@ -404,13 +408,13 @@ void Enemy3::Draw(sf::RenderWindow& window)
         //            window.draw(shape);
         //        };
 
-    //        drawSafeZone(safeZoneLeft);
-    //        drawSafeZone(safeZoneRight);
-    //    }
-    //}
+ /*           drawSafeZone(safeZoneLeft);
+            drawSafeZone(safeZoneRight);
+        }
+    }*/
 
     // Hitbox thân
-  /*  sf::RectangleShape bodyBox;
+ /*   sf::RectangleShape bodyBox;
     bodyBox.setPosition(bodyHitbox.left, bodyHitbox.top);
     bodyBox.setSize({ bodyHitbox.width, bodyHitbox.height });
     bodyBox.setFillColor(sf::Color(255, 0, 0, 40));
